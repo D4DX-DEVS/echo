@@ -39,3 +39,17 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local
+/data/
+/public/uploads/
+
+.vercel
+.env*
+
+# cloudflare
+/.open-next
+/.dry
+/.wrangler
+.dev.vars
+.wrangler

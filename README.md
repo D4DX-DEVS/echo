@@ -1,36 +1,30 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# The Echo — Next.js
 
-## Getting Started
+Next.js 15 (App Router) rewrite of theecho.in. Vercel hosting, Cloudflare D1 (database) + R2 (images). Same URLs as WordPress (`/post-slug`, `/parent-cat/child-cat`).
 
-First, run the development server:
-
+## Local dev (no Cloudflare needed)
 ```bash
+npm install
+cp .env.example .env.local        # set ADMIN_PASSWORD
+node --env-file=.env.local scripts/import.ts   # pulls all posts from WP -> data/local.db
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+Admin: footer **Admin** link → `/admin`. Posts (search/filter/edit/delete/drafts), categories, pages, image upload.
+Without R2 vars uploads go to `public/uploads`; without D1 vars the DB is local sqlite.
+
+## Cloudflare setup
+1. **D1**: `npx wrangler d1 create echo` → copy database id. Create an API token with *D1 Edit*.
+2. **R2**: create a bucket, enable public access (or attach a custom domain), create an S3 API token (Object Read & Write).
+3. Fill `.env.local` per `.env.example`, then:
+```bash
+node --env-file=.env.local scripts/import.ts           # creates tables in D1 + imports WP content
+node --env-file=.env.local scripts/migrate-images.ts   # copies WP images to R2, rewrites URLs
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Vercel
+Import the repo, add the same env vars (`ADMIN_PASSWORD`, `SESSION_SECRET`, `NEXT_PUBLIC_SITE_URL`, `CF_*`, `D1_DATABASE_ID`, `R2_*`), deploy, then point the `theecho.in` domain at Vercel.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Notes
+- Uploads go through a Vercel function: 4 MB limit per image.
+- Content is stored as HTML; the editor is an HTML textarea with a toolbar and preview.
+- D1 is queried over its REST API (works from Vercel). Pages are ISR-cached (60–300 s); admin saves revalidate everything.

@@ -1,0 +1,19 @@
+{
+  "name": "theecho",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2025-06-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
+  "vars": {
+    "NEXT_PUBLIC_SITE_URL": "https://theecho.in",
+    "R2_PUBLIC_URL": "https://pub-b9cebca383e54a62bbd562b59d3c589d.r2.dev"
+  },
+  "d1_databases": [
+    { "binding": "DB", "database_name": "theecho", "database_id": "9a80cdc3-b4d8-4075-a3dc-1a25d83eef1e" },
+    { "binding": "NEXT_TAG_CACHE_D1", "database_name": "theecho", "database_id": "9a80cdc3-b4d8-4075-a3dc-1a25d83eef1e" }
+  ],
+  "r2_buckets": [
+    { "binding": "MEDIA", "bucket_name": "theecho-media" },
+    { "binding": "NEXT_INC_CACHE_R2_BUCKET", "bucket_name": "theecho-cache" }
+  ]
+}
