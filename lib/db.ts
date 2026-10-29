@@ -1,4 +1,4 @@
-import { SCHEMA } from "./schema.ts";
+import { SCHEMA, UPGRADES } from "./schema.ts";
 import { bindings } from "./cf.ts";
 
 type Param = string | number | null;
@@ -29,6 +29,7 @@ async function sqlite() {
     mkdirSync("data", { recursive: true });
     local = new DatabaseSync("data/local.db");
     local.exec("PRAGMA busy_timeout=10000; PRAGMA journal_mode=WAL");
+    for (const s of UPGRADES) try { local.exec(s); } catch { /* new database, or column already there */ }
     for (const s of SCHEMA) local.exec(s);
   }
   return local;
@@ -50,6 +51,7 @@ export async function run(sql: string, params: Param[] = []): Promise<number> {
 }
 
 export async function initSchema() {
+  for (const s of UPGRADES) try { await run(s); } catch { /* new database, or column already there */ }
   for (const s of SCHEMA) await run(s);
 }
 export const dbMode = remote ? "Cloudflare D1" : "local sqlite";

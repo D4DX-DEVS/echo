@@ -2,7 +2,7 @@ import PostCard from "@/components/PostCard";
 import LoadMore from "@/components/LoadMore";
 import { getCategories, latest, withChildren } from "@/lib/data";
 
-export const revalidate = 60;
+export const revalidate = 600;
 
 const Heading = ({ children }: { children: React.ReactNode }) => (
   <h2 className="section-title mb-5">{children}</h2>

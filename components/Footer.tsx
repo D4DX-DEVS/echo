@@ -12,7 +12,7 @@ export default async function Footer() {
     <footer className="mt-16 bg-nav text-white">
       <div className="wrap py-10 grid gap-10 md:grid-cols-[1fr_1.4fr]">
         <div>
-          <Link href="/" aria-label="The Echo — home" className="block w-fit">
+          <Link prefetch={false} href="/" aria-label="The Echo — home" className="block w-fit">
             <Image src="/logo.png" alt="The Echo" width={512} height={441} className="h-24 w-auto brightness-0 invert" />
           </Link>
           <p className="mt-4 text-sm opacity-90 max-w-sm">Independent. Engaging. Insightful. Covering stories that matter from Kerala, India and around the world.</p>
@@ -28,8 +28,8 @@ export default async function Footer() {
         <div>
           <h3 className="font-bold mb-3">Quick Links</h3>
           <ul className="grid grid-cols-2 sm:grid-cols-3 gap-x-8 gap-y-2 text-sm opacity-90">
-            {quick.map((c) => <li key={c.id}><Link href={categoryPath(cats, c)} className="hover:underline">{c.name}</Link></li>)}
-            <li><Link href="/contact-page" className="hover:underline">Contact</Link></li>
+            {quick.map((c) => <li key={c.id}><Link prefetch={false} href={categoryPath(cats, c)} className="hover:underline">{c.name}</Link></li>)}
+            <li><Link prefetch={false} href="/contact-page" className="hover:underline">Contact</Link></li>
           </ul>
         </div>
       </div>

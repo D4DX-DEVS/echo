@@ -21,7 +21,7 @@ export default function PostCard({ post, label, size = "md", video }: Props) {
   // sidebar list: small fixed thumbnail, 3-line title, one-line meta, so every item stays short
   if (size === "compact")
     return (
-      <Link href={href} className="card flex gap-3 py-3">
+      <Link prefetch={false} href={href} className="card flex gap-3 py-3">
         <div className="thumb relative w-[88px] h-[60px] shrink-0 rounded-lg">{img}</div>
         <div className="min-w-0">
           <h3 className="card-title font-semibold text-sm leading-snug line-clamp-3">{post.title}</h3>
@@ -32,7 +32,7 @@ export default function PostCard({ post, label, size = "md", video }: Props) {
 
   if (size === "row")
     return (
-      <Link href={href} className="card flex gap-4 py-3">
+      <Link prefetch={false} href={href} className="card flex gap-4 py-3">
         <div className="thumb relative w-20 sm:w-24 h-[3.75rem] shrink-0 rounded-lg">{img}</div>
         <div className="min-w-0">
           <h3 className="card-title font-bold text-[0.95rem] leading-snug">{post.title}</h3>
@@ -45,7 +45,7 @@ export default function PostCard({ post, label, size = "md", video }: Props) {
   if (size === "lg" || size === "tile") {
     const big = size === "lg";
     return (
-      <Link
+      <Link prefetch={false}
         href={href}
         className={`card relative flex flex-col justify-end h-full overflow-hidden bg-nav ${big ? "rounded-2xl min-h-[20rem] sm:min-h-[24rem] lg:min-h-[26rem]" : "rounded-xl min-h-[11rem]"}`}
       >
@@ -61,7 +61,7 @@ export default function PostCard({ post, label, size = "md", video }: Props) {
   }
 
   return (
-    <Link href={href} className="card flex flex-col h-full rounded-xl overflow-hidden bg-bg border border-line shadow-[0_1px_2px_rgba(17,60,80,0.06)] hover:shadow-[0_8px_20px_-6px_rgba(17,60,80,0.14)] hover:-translate-y-0.5 transition">
+    <Link prefetch={false} href={href} className="card flex flex-col h-full rounded-xl overflow-hidden bg-bg border border-line shadow-[0_1px_2px_rgba(17,60,80,0.06)] hover:shadow-[0_8px_20px_-6px_rgba(17,60,80,0.14)] hover:-translate-y-0.5 transition">
       <div className="thumb relative aspect-[16/10]">
         {img}
         {video && <span className="absolute inset-0 grid place-items-center"><span className="w-12 h-12 rounded-full bg-black/60 text-white grid place-items-center">▶</span></span>}

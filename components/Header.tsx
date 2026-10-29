@@ -19,7 +19,7 @@ export default async function Header() {
     <>
       <ScrollFlag />
       <header className="wrap relative flex justify-center py-3 sm:py-4">
-        <Link href="/" aria-label="The Echo — home">
+        <Link prefetch={false} href="/" aria-label="The Echo — home">
           <Image src="/logo.png" alt="The Echo" width={512} height={441} priority className="h-24 sm:h-32 w-auto" />
         </Link>
         <div className="absolute right-4 top-3 sm:top-4 flex items-center gap-2">
@@ -36,13 +36,13 @@ export default async function Header() {
           <div className="bg-nav text-white rounded-2xl shadow-md flex items-center gap-2 px-2">
             {/* desktop: dropdowns */}
             <ul className="hidden lg:flex flex-1 justify-start text-[16px] py-1">
-              <li><Link href="/" className={link}>Latest</Link></li>
+              <li><Link prefetch={false} href="/" className={link}>Latest</Link></li>
               {tops.map((c) => (
                 <li key={c.id} className="relative group">
-                  <Link href={c.href} className={link}>{c.name}{c.kids.length > 0 && <span className="ml-1 text-xs">▾</span>}</Link>
+                  <Link prefetch={false} href={c.href} className={link}>{c.name}{c.kids.length > 0 && <span className="ml-1 text-xs">▾</span>}</Link>
                   {c.kids.length > 0 && (
                     <ul className="absolute left-0 top-full min-w-48 bg-nav rounded-xl shadow-lg p-1 hidden group-hover:block group-focus-within:block">
-                      {c.kids.map((k) => <li key={k.id}><Link href={k.href} className={link}>{k.name}</Link></li>)}
+                      {c.kids.map((k) => <li key={k.id}><Link prefetch={false} href={k.href} className={link}>{k.name}</Link></li>)}
                     </ul>
                   )}
                 </li>
@@ -50,15 +50,15 @@ export default async function Header() {
             </ul>
             {/* mobile: flat scrolling strip */}
             <ul className="lg:hidden flex flex-1 min-w-0 overflow-x-auto text-sm py-0.5">
-              <li><Link href="/" className={link}>Latest</Link></li>
-              {tops.flatMap((c) => [c, ...c.kids]).map((c) => <li key={c.id}><Link href={c.href} className={link}>{c.name}</Link></li>)}
+              <li><Link prefetch={false} href="/" className={link}>Latest</Link></li>
+              {tops.flatMap((c) => [c, ...c.kids]).map((c) => <li key={c.id}><Link prefetch={false} href={c.href} className={link}>{c.name}</Link></li>)}
             </ul>
 
             <form action="/search" className="hidden md:flex items-center shrink-0 rounded-full bg-white/15 pl-4 pr-1">
               <input name="q" type="search" placeholder="Search news, topics…" aria-label="Search" className="bg-transparent outline-none w-48 py-2 text-sm placeholder:text-white/70" />
               <button className="p-2" aria-label="Search">{searchIcon}</button>
             </form>
-            <Link href="/search" aria-label="Search" className="md:hidden p-3 shrink-0">{searchIcon}</Link>
+            <Link prefetch={false} href="/search" aria-label="Search" className="md:hidden p-3 shrink-0">{searchIcon}</Link>
           </div>
         </div>
       </nav>

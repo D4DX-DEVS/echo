@@ -1,3 +1,4 @@
+import { cache } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -8,7 +9,7 @@ import ShareBar from "@/components/ShareBar";
 import { fmtDateTime } from "@/lib/format";
 import { fixLazy } from "@/lib/content";
 
-export const revalidate = 300;
+export const revalidate = 900;
 export const generateStaticParams = () => []; // render on first hit, then ISR-cache
 
 // URLs mirror WordPress: /post-slug, /parent-cat/child-cat, /cat/page/2, /page-slug
@@ -18,8 +19,9 @@ type Resolved =
   | { kind: "tag"; tag: Tag; page: number }
   | { kind: "page"; page: NonNullable<Awaited<ReturnType<typeof getPage>>> };
 
-async function resolve(raw: string[]): Promise<Resolved | null> {
-  let segs = raw.map((s) => decodeURIComponent(s));
+// cache(): generateMetadata and the page both resolve the same URL, so look it up once per request
+const resolve = cache(async (path: string): Promise<Resolved | null> => {
+  let segs = path.split("/").map((s) => decodeURIComponent(s));
   let page = 1;
   if (segs.length >= 3 && segs[segs.length - 2] === "page" && /^\d+$/.test(segs.at(-1)!)) {
     page = +segs.at(-1)!;
@@ -46,10 +48,10 @@ async function resolve(raw: string[]): Promise<Resolved | null> {
     if (pg) return { kind: "page", page: pg };
   }
   return null;
-}
+});
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string[] }> }): Promise<Metadata> {
-  const r = await resolve((await params).slug);
+  const r = await resolve((await params).slug.join("/"));
   if (!r) return {};
   if (r.kind === "post")
     return {
@@ -64,7 +66,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 }
 
 export default async function Slug({ params }: { params: Promise<{ slug: string[] }> }) {
-  const r = await resolve((await params).slug);
+  const r = await resolve((await params).slug.join("/"));
   if (!r) notFound();
 
   if (r.kind === "page")
@@ -124,15 +126,15 @@ export default async function Slug({ params }: { params: Promise<{ slug: string[
   return (
     <article className="wrap py-8">
       <nav aria-label="Breadcrumb" className="text-xs text-muted flex flex-wrap items-center gap-1.5 mb-5">
-        <Link href="/" className="hover:text-accent">Home</Link>
-        {parent && <><span>›</span><Link href={categoryPath(cats, parent)} className="hover:text-accent">{parent.name}</Link></>}
-        {showCat && <><span>›</span><Link href={categoryPath(cats, showCat)} className="hover:text-accent">{showCat.name}</Link></>}
+        <Link prefetch={false} href="/" className="hover:text-accent">Home</Link>
+        {parent && <><span>›</span><Link prefetch={false} href={categoryPath(cats, parent)} className="hover:text-accent">{parent.name}</Link></>}
+        {showCat && <><span>›</span><Link prefetch={false} href={categoryPath(cats, showCat)} className="hover:text-accent">{showCat.name}</Link></>}
         <span>›</span><span>Article</span>
       </nav>
 
       <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_340px]">
         <div>
-          {showCat && <Link href={categoryPath(cats, showCat)} className="inline-block rounded bg-accent px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-white">{showCat.name}</Link>}
+          {showCat && <Link prefetch={false} href={categoryPath(cats, showCat)} className="inline-block rounded bg-accent px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-white">{showCat.name}</Link>}
           <h1 className="text-2xl sm:text-[34px] font-bold leading-snug mt-3 text-balance">{post.title}</h1>
           {post.excerpt && <p className="italic text-muted text-lg mt-3 leading-relaxed">{post.excerpt}</p>}
 
@@ -167,7 +169,7 @@ export default async function Slug({ params }: { params: Promise<{ slug: string[
               <ol className="divide-y divide-line">
                 {more.map((p, i) => (
                   <li key={p.id}>
-                    <Link href={`/${encodeURIComponent(p.slug)}`} className="card flex items-start gap-3 py-3">
+                    <Link prefetch={false} href={`/${encodeURIComponent(p.slug)}`} className="card flex items-start gap-3 py-3">
                       <span className="shrink-0 w-8 h-8 rounded-full bg-surface grid place-items-center text-xs font-bold">{String(i + 1).padStart(2, "0")}</span>
                       <span className="card-title font-semibold text-[15px]">{p.title}</span>
                     </Link>
@@ -180,7 +182,7 @@ export default async function Slug({ params }: { params: Promise<{ slug: string[
             <section className={card}>
               <h2 className="section-title !text-xl mb-3">Tags</h2>
               <div className="flex flex-wrap gap-2">
-                {tags.map((t) => <Link key={t.id} href={`/tag/${encodeURIComponent(t.slug)}`} className="text-sm px-3 py-1 rounded-full bg-surface hover:text-accent">{t.name}</Link>)}
+                {tags.map((t) => <Link prefetch={false} key={t.id} href={`/tag/${encodeURIComponent(t.slug)}`} className="text-sm px-3 py-1 rounded-full bg-surface hover:text-accent">{t.name}</Link>)}
               </div>
             </section>
           )}
