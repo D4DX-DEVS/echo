@@ -20,6 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="ml" className={`${anek.variable} ${noto.variable}`} suppressHydrationWarning>
       <head>
         {/* apply saved theme before first paint to avoid a flash */}
+        <link rel="alternate" type="application/rss+xml" title="The Echo" href="/feed" />
         <script dangerouslySetInnerHTML={{ __html: `try{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t}catch(e){}` }} />
       </head>
       <body className="min-h-screen flex flex-col">

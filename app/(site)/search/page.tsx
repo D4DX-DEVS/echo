@@ -14,6 +14,7 @@ export default async function Search({ searchParams }: { searchParams: Promise<{
 
   return (
     <div className="wrap py-8">
+      <h1 className="sr-only">Search</h1>
       <form action="/search" className="max-w-xl mb-8 flex gap-2">
         <input name="q" defaultValue={term} placeholder="Search news…" className="field" autoFocus />
         <button className="btn">Search</button>

@@ -8,6 +8,8 @@ import { PAGE_SIZE, categoryPath, getCategories, getPostTags, getTag, type Tag, 
 import ShareBar from "@/components/ShareBar";
 import { fmtDateTime } from "@/lib/format";
 import { fixLazy } from "@/lib/content";
+import JsonLd from "@/components/JsonLd";
+import { breadcrumbs, describe, isoIST, og, organization } from "@/lib/seo";
 
 export const revalidate = 900;
 export const generateStaticParams = () => []; // render on first hit, then ISR-cache
@@ -53,16 +55,35 @@ const resolve = cache(async (path: string): Promise<Resolved | null> => {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string[] }> }): Promise<Metadata> {
   const r = await resolve((await params).slug.join("/"));
   if (!r) return {};
-  if (r.kind === "post")
+  if (r.kind === "post") {
+    const { post } = r;
+    const path = `/${encodeURIComponent(post.slug)}`;
+    const description = describe(post.excerpt, post.content);
     return {
-      title: r.post.title,
-      description: r.post.excerpt,
-      openGraph: { title: r.post.title, description: r.post.excerpt, type: "article", images: r.post.image ? [r.post.image] : [] },
+      title: post.title,
+      description,
+      alternates: { canonical: path },
+      openGraph: {
+        ...og({ title: post.title, description, path, images: post.image ? [post.image] : [] }),
+        type: "article",
+        publishedTime: isoIST(post.published_at),
+        modifiedTime: isoIST(post.updated_at),
+        authors: [post.author],
+      },
       twitter: { card: "summary_large_image" },
     };
-  if (r.kind === "category") return { title: r.cat.name };
-  if (r.kind === "tag") return { title: r.tag.name };
-  return { title: r.page.title };
+  }
+  // /cat/page/N still resolves for old WordPress links; each page canonicalises to itself
+  if (r.kind === "category" || r.kind === "tag") {
+    const name = r.kind === "category" ? r.cat.name : r.tag.name;
+    const base = r.kind === "category" ? r.base : `/tag/${encodeURIComponent(r.tag.slug)}`;
+    const path = r.page > 1 ? `${base}/page/${r.page}` : base;
+    const description = r.kind === "category" ? `${name}: the latest stories from The Echo.` : `Stories tagged ${name} on The Echo.`;
+    return { title: r.page > 1 ? `${name} (page ${r.page})` : name, description, alternates: { canonical: path }, openGraph: og({ title: name, description, path }) };
+  }
+  const path = `/${encodeURIComponent(r.page.slug)}`;
+  const description = describe("", r.page.content);
+  return { title: r.page.title, description, alternates: { canonical: path }, openGraph: og({ title: r.page.title, description, path }) };
 }
 
 export default async function Slug({ params }: { params: Promise<{ slug: string[] }> }) {
@@ -99,8 +120,10 @@ export default async function Slug({ params }: { params: Promise<{ slug: string[
     const posts = await latest(PAGE_SIZE, { cats: ids, offset: (r.page - 1) * PAGE_SIZE });
     if (!posts.length && r.page > 1) notFound();
     const names = Object.fromEntries(cats.map((c) => [c.id, c.name]));
+    const parentCat = cats.find((c) => c.id === r.cat.parent_id);
     return (
       <div className="wrap py-8">
+        <JsonLd data={breadcrumbs([{ name: "Home", path: "/" }, ...(parentCat ? [{ name: parentCat.name, path: categoryPath(cats, parentCat) }] : []), { name: r.cat.name, path: r.base }])} />
         <h1 className="section-title mb-8">{r.cat.name}</h1>
         <div className="grid gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
           {posts.map((p) => <PostCard key={p.id} post={p} label={names[p.category_id]} />)}
@@ -123,8 +146,27 @@ export default async function Slug({ params }: { params: Promise<{ slug: string[
   const url = `${process.env.NEXT_PUBLIC_SITE_URL || "https://theecho.in"}/${encodeURIComponent(post.slug)}`;
   const card = "rounded-2xl bg-bg border border-line shadow-[0_1px_2px_rgba(17,60,80,0.06)] p-5";
 
+  const byGenericDesk = !post.author.trim() || /^web desk$/i.test(post.author.trim());
+  const trail = [{ name: "Home", path: "/" }, ...(parent ? [{ name: parent.name, path: categoryPath(cats, parent) }] : []), ...(showCat ? [{ name: showCat.name, path: categoryPath(cats, showCat) }] : []), { name: post.title, path: `/${encodeURIComponent(post.slug)}` }];
+
   return (
     <article className="wrap py-8">
+      <JsonLd data={{
+        "@context": "https://schema.org",
+        "@type": "NewsArticle",
+        mainEntityOfPage: { "@type": "WebPage", "@id": url },
+        headline: post.title.slice(0, 110),
+        description: describe(post.excerpt, post.content),
+        ...(post.image && { image: [post.image] }),
+        datePublished: isoIST(post.published_at),
+        dateModified: isoIST(post.updated_at),
+        author: byGenericDesk ? { "@type": "Organization", name: organization.name, url: organization.url } : { "@type": "Person", name: post.author },
+        publisher: organization,
+        inLanguage: "ml",
+        ...(showCat && { articleSection: showCat.name }),
+        ...(tags.length > 0 && { keywords: tags.map((t) => t.name).join(", ") }),
+      }} />
+      <JsonLd data={breadcrumbs(trail)} />
       <nav aria-label="Breadcrumb" className="text-xs text-muted flex flex-wrap items-center gap-1.5 mb-5">
         <Link prefetch={false} href="/" className="hover:text-accent">Home</Link>
         {parent && <><span>›</span><Link prefetch={false} href={categoryPath(cats, parent)} className="hover:text-accent">{parent.name}</Link></>}
@@ -151,7 +193,7 @@ export default async function Slug({ params }: { params: Promise<{ slug: string[
 
           {post.image && (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={post.image} alt="" className="w-full rounded-2xl mt-6 aspect-[16/10] object-cover" />
+            <img src={post.image} alt={post.title} fetchPriority="high" decoding="async" className="w-full rounded-2xl mt-6 aspect-[16/10] object-cover" />
           )}
           <div className="article mt-8" dangerouslySetInnerHTML={{ __html: fixLazy(post.content) }} />
         </div>

@@ -2,18 +2,18 @@ import Link from "next/link";
 import type { PostCard as P } from "@/lib/data";
 import { ago } from "@/lib/format";
 
-type Props = { post: P; label?: string; size?: "lg" | "md" | "row" | "compact" | "tile"; video?: boolean };
+type Props = { post: P; label?: string; size?: "lg" | "md" | "row" | "compact" | "tile"; video?: boolean; priority?: boolean };
 
 const Chip = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
   <span className={`rounded bg-accent px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white ${className}`}>{children}</span>
 );
 
-export default function PostCard({ post, label, size = "md", video }: Props) {
+export default function PostCard({ post, label, size = "md", video, priority }: Props) {
   const href = `/${encodeURIComponent(post.slug)}`;
   const byline = <>{post.author} <span className="mx-1">·</span> {ago(post.published_at)}</>;
   const img = post.image ? (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={post.image} alt="" loading="lazy" className="w-full h-full object-cover" />
+    <img src={post.image} alt="" loading={priority ? "eager" : "lazy"} fetchPriority={priority ? "high" : undefined} decoding="async" className="w-full h-full object-cover" />
   ) : (
     <div className="w-full h-full grid place-items-center text-muted text-sm bg-surface">The Echo</div>
   );
