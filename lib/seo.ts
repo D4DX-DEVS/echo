@@ -30,3 +30,5 @@ export const breadcrumbs = (items: { name: string; path: string }[]) => ({
   "@type": "BreadcrumbList",
   itemListElement: items.map((it, i) => ({ "@type": "ListItem", position: i + 1, name: it.name, item: abs(it.path) })),
 });
+
+export const xmlEscape = (s: string) => s.replace(/[<>&"']/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;", "'": "&apos;" })[c]!);

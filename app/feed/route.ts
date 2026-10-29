@@ -1,10 +1,8 @@
 import { latest } from "@/lib/data";
 import { cached } from "@/lib/cache";
-import { abs, isoIST, siteName, siteUrl } from "@/lib/seo";
+import { abs, isoIST, siteName, siteUrl, xmlEscape as esc } from "@/lib/seo";
 
 export const revalidate = 600;
-
-const esc = (s: string) => s.replace(/[<>&"']/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;", "'": "&apos;" })[c]!);
 
 // RSS at /feed, the address WordPress used, so existing subscribers and aggregators keep working.
 export async function GET() {
