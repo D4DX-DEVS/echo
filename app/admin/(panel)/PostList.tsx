@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { deletePost } from "../actions";
 import ConfirmButton from "@/components/ConfirmButton";
+import VideoAdd from "@/components/VideoAdd";
 import { getCategories, postCount, q, withChildren, type PostCard } from "@/lib/data";
 import { fmtDate } from "@/lib/format";
 
@@ -59,7 +60,7 @@ export default async function PostList({ sp, base, title, video }: { sp: ListPar
     <div>
       <div className="flex flex-wrap items-center gap-3 mb-5">
         <h1 className="text-2xl font-extrabold">{title}{count !== undefined && <span className="text-muted text-base font-normal"> ({count})</span>}</h1>
-        <Link href="/admin/posts/new" className="btn ml-auto">+ New post</Link>
+        {video ? <VideoAdd cats={cats} defaultCat={cats.find((c) => /video/.test(c.slug))?.id ?? cats[0].id} /> : <Link href="/admin/posts/new" className="btn ml-auto">+ New post</Link>}
       </div>
       <form className="flex gap-2 mb-4 flex-wrap">
         <input name="q" aria-label="Search title" defaultValue={sp.q} placeholder="Search title…" className="field !w-64 !rounded-xl" />

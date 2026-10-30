@@ -2,37 +2,8 @@
 import { useActionState, useRef, useState } from "react";
 import { savePost } from "@/app/admin/actions";
 import type { Category, Post } from "@/lib/data";
-
-/** Phone and camera photos are several MB; scale them to 1600px wide WebP before upload so pages stay fast. */
-async function shrink(file: File): Promise<File> {
-  if (!/^image\/(jpeg|png|webp)$/.test(file.type)) return file; // GIFs may be animated, AVIF is already small
-  try {
-    const bmp = await createImageBitmap(file);
-    if (bmp.width <= 1600 && file.size < 400_000) return file;
-    const scale = Math.min(1, 1600 / bmp.width);
-    const canvas = document.createElement("canvas");
-    canvas.width = Math.round(bmp.width * scale);
-    canvas.height = Math.round(bmp.height * scale);
-    canvas.getContext("2d")!.drawImage(bmp, 0, 0, canvas.width, canvas.height);
-    const blob = await new Promise<Blob | null>((r) => canvas.toBlob(r, "image/webp", 0.82));
-    return blob && blob.size < file.size ? new File([blob], file.name.replace(/\.\w+$/, "") + ".webp", { type: "image/webp" }) : file;
-  } catch {
-    return file;
-  }
-}
-
-async function upload(original: File): Promise<string> {
-  const file = await shrink(original);
-  const fd = new FormData();
-  fd.append("file", file);
-  const r = await fetch("/api/upload", { method: "POST", body: fd });
-  const j = await r.json();
-  if (!r.ok) throw new Error(j.error || "upload failed");
-  return j.url;
-}
-
-/** YouTube watch / share / shorts / embed URL -> video id. */
-const ytId = (u: string) => u.match(/(?:youtube(?:-nocookie)?\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{11})/)?.[1];
+import { videoHtml } from "@/lib/content";
+import { uploadImage, uploadVideo, videoThumbnail } from "@/lib/upload-client";
 
 export default function PostForm({ cats, post, tags = "" }: { cats: Category[]; post?: Post; tags?: string }) {
   const [err, action, pending] = useActionState(savePost, undefined);
@@ -52,8 +23,23 @@ export default function PostForm({ cats, post, tags = "" }: { cats: Category[]; 
     const f = e.target.files?.[0];
     if (!f) return;
     setMsg("Uploading…");
-    try { cb(await upload(f)); setMsg(""); } catch (x) { setMsg(String(x)); }
+    try { cb(await uploadImage(f)); setMsg(""); } catch (x) { setMsg(String(x)); }
     e.target.value = "";
+  };
+  // a browsed video goes to R2; if the post has no featured image yet, a frame from the video becomes it
+  const pickVideo = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    e.target.value = "";
+    if (!f) return;
+    try {
+      const url = await uploadVideo(f, (p) => setMsg(`Uploading video… ${p}%`));
+      wrap(`<video controls preload="metadata" src="${url}"></video>`);
+      if (!image) {
+        const still = await videoThumbnail(f);
+        if (still) setImage(await uploadImage(still));
+      }
+      setMsg("");
+    } catch (x) { setMsg(x instanceof Error ? x.message : "Upload failed"); }
   };
   const date = (post?.published_at ?? new Date().toISOString()).slice(0, 16);
 
@@ -74,16 +60,18 @@ export default function PostForm({ cats, post, tags = "" }: { cats: Category[]; 
             <button type="button" className="btn ghost sm" onClick={() => { const u = prompt("Link URL"); if (u) wrap(`<a href="${u}">`, "</a>"); }}>Link</button>
             <button type="button" className="btn ghost sm" onClick={() => wrap("<blockquote>", "</blockquote>")}>Quote</button>
             <button type="button" className="btn ghost sm" onClick={() => {
-              const u = prompt("YouTube video URL");
+              const u = prompt("Video link (YouTube, or a direct .mp4 / .webm link)");
               if (!u) return;
-              const id = ytId(u);
-              if (!id) return setMsg("Not a YouTube link");
+              const html = videoHtml(u);
+              if (!html) return setMsg("Please paste a YouTube link, or a direct link to an .mp4, .webm or .mov file");
               setMsg("");
-              wrap(`<iframe src="https://www.youtube.com/embed/${id}" allowfullscreen loading="lazy"></iframe>`);
-            }}>Video</button>
-            <label className="btn ghost sm">Image<input type="file" accept="image/*" hidden onChange={pick((u) => wrap(`<img src="${u}" alt="" />`))} /></label>
+              wrap(html);
+            }}>Video link</button>
+            <label className="btn ghost sm">Browse video<input type="file" accept="video/mp4,video/webm,video/quicktime" hidden onChange={pickVideo} /></label>
+            <label className="btn ghost sm">Browse photo<input type="file" accept="image/*" hidden onChange={pick((u) => wrap(`<img src="${u}" alt="" />`))} /></label>
             <button type="button" className="btn ghost sm ml-auto" onClick={() => setPreview(!preview)}>{preview ? "Edit HTML" : "Preview"}</button>
           </div>
+          {msg && <p role="status" className="text-sm text-muted mb-2">{msg}</p>}
           {preview ? (
             <div className="article border border-line rounded-lg p-4 min-h-96" dangerouslySetInnerHTML={{ __html: content }} />
           ) : (
@@ -117,7 +105,7 @@ export default function PostForm({ cats, post, tags = "" }: { cats: Category[]; 
         <div className="text-sm font-medium">Featured image
           {image && /* eslint-disable-next-line @next/next/no-img-element */ <img src={image} alt="" className="mt-2 rounded-lg aspect-video object-cover w-full" />}
           <input name="image" value={image} onChange={(e) => setImage(e.target.value)} placeholder="https://…" className="field mt-2" />
-          <label className="btn ghost sm mt-2 cursor-pointer">Upload photo<input type="file" accept="image/*" hidden onChange={pick(setImage)} /></label>
+          <label className="btn ghost sm mt-2 cursor-pointer">Browse photo<input type="file" accept="image/*" hidden onChange={pick(setImage)} /></label>
           {msg && <p className="text-xs text-muted mt-1">{msg}</p>}
         </div>
       </aside>

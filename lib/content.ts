@@ -20,3 +20,11 @@ export const youtubeId = (html: string) => html.match(YT)?.[1];
 
 /** True when the post carries a playable video (YouTube, Facebook video, or a <video> file). */
 export const hasVideo = (html: string) => YT.test(html) || /<video\b/i.test(html) || /facebook\.com\/plugins\/video\.php/i.test(html);
+
+/** Player HTML for a pasted link: YouTube (watch / share / shorts / embed) or a direct .mp4 / .webm / .mov file; anything else gives undefined. */
+export function videoHtml(link: string): string | undefined {
+  const url = link.trim();
+  const id = url.match(/(?:youtube(?:-nocookie)?\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{11})/)?.[1];
+  if (id) return `<iframe src="https://www.youtube.com/embed/${id}" allowfullscreen loading="lazy"></iframe>`;
+  if (/^https?:\/\/[^\s"'<>]+\.(mp4|webm|mov)(\?[^\s"'<>]*)?$/i.test(url)) return `<video controls preload="metadata" src="${url}"></video>`;
+}

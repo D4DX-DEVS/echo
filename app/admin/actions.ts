@@ -49,7 +49,7 @@ export async function savePost(_: string | undefined, f: FormData) {
     return /UNIQUE/i.test(String(e)) ? "Slug already used by another post" : `Save failed: ${e}`;
   }
   refresh();
-  redirect("/admin?saved=1");
+  redirect(str(f, "return_to") === "videos" ? "/admin/videos?saved=1" : "/admin?saved=1");
 }
 
 /** Comma-separated tag names -> post_tags; unknown names become new tags (ids >= 100000 so they never clash with WordPress tag ids). */

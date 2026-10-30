@@ -2,7 +2,7 @@
 type Stmt = { bind(...p: unknown[]): Stmt; all(): Promise<{ results: Record<string, unknown>[] }>; run(): Promise<{ meta: { last_row_id?: number } }> };
 export type Bindings = {
   DB?: { prepare(sql: string): Stmt };
-  MEDIA?: { put(key: string, body: ArrayBuffer | Buffer, o: { httpMetadata: { contentType: string } }): Promise<unknown> };
+  MEDIA?: { put(key: string, body: ArrayBuffer | Buffer | ReadableStream | null, o: { httpMetadata: { contentType: string } }): Promise<unknown> };
   R2_PUBLIC_URL?: string;
 };
 
