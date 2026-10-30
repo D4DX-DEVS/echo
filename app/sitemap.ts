@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { categoryPath, getCategories, q } from "@/lib/data";
 import { abs, isoIST } from "@/lib/seo";
 
-export const revalidate = 3600;
+export const revalidate = 21600; // the sitemap reads every post, so rebuild it at most every 6 hours (the news sitemap covers fresh posts)
 
 // Canonical, indexable URLs only: home, categories, static pages and published posts (not tags, search or admin).
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

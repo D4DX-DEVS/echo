@@ -44,18 +44,19 @@ export async function latest(limit: number, opts: { cats?: number[]; offset?: nu
 
 /** Category feed straight off idx_pc_feed: reads about one page of rows however big the category is. */
 async function latestInCats(limit: number, opts: { cats: number[]; offset?: number; exclude?: number[]; before?: string }) {
-  const marks = (a: unknown[]) => a.map(() => "?").join(",");
-  const where = [`category_id IN (${marks(opts.cats)})`, "status='published'"];
-  const params: (string | number)[] = [...opts.cats];
-  if (opts.before) { where.push("published_at < ?"); params.push(opts.before); }
-  if (opts.exclude?.length) { where.push(`post_id NOT IN (${marks(opts.exclude)})`); params.push(...opts.exclude); }
-  // a post filed under a parent and a child category must count once
-  const feed = opts.cats.length > 1
-    ? `SELECT post_id, MAX(published_at) newest FROM post_categories WHERE ${where.join(" AND ")} GROUP BY post_id ORDER BY newest DESC`
-    : `SELECT post_id, published_at newest FROM post_categories WHERE ${where.join(" AND ")} ORDER BY published_at DESC`;
+  const offset = opts.offset ?? 0;
+  const where = ["category_id = ?", "status='published'"];
+  const extra: (string | number)[] = [];
+  if (opts.before) { where.push("published_at < ?"); extra.push(opts.before); }
+  if (opts.exclude?.length) { where.push(`post_id NOT IN (${opts.exclude.map(() => "?").join(",")})`); extra.push(...opts.exclude); }
+  // Newest `limit + offset` of each category, merged: a post in the overall top N is in the top N of its own category,
+  // so no category is read beyond N rows (a parent with children used to read all of them, ~6,500 rows).
+  const branch = `SELECT post_id, published_at FROM (SELECT post_id, published_at FROM post_categories WHERE ${where.join(" AND ")} ORDER BY published_at DESC LIMIT ?)`;
+  const params = opts.cats.flatMap((c) => [c, ...extra, limit + offset]);
+  // GROUP BY: a post filed under a parent and a child category must count once
   return q<PostCard>(
-    `SELECT ${CARD} FROM posts WHERE id IN (SELECT post_id FROM (${feed} LIMIT ? OFFSET ?)) ORDER BY published_at DESC`,
-    [...params, limit, opts.offset ?? 0],
+    `SELECT ${CARD} FROM posts WHERE id IN (SELECT post_id FROM (SELECT post_id, MAX(published_at) newest FROM (${opts.cats.map(() => branch).join(" UNION ALL ")}) GROUP BY post_id ORDER BY newest DESC LIMIT ? OFFSET ?)) ORDER BY published_at DESC`,
+    [...params, limit, offset],
   );
 }
 
