@@ -28,6 +28,8 @@ export const SCHEMA = [
   `CREATE INDEX IF NOT EXISTS idx_posts_video ON posts(has_video, status, published_at DESC)`,
   // the admin post list sorts all posts (drafts too), which would otherwise scan the whole table on every view
   `CREATE INDEX IF NOT EXISTS idx_posts_pub ON posts(published_at DESC)`,
+  // admin category filter: newest posts of a category, any status
+  `CREATE INDEX IF NOT EXISTS idx_pc_cat_pub ON post_categories(category_id, published_at DESC)`,
   `CREATE INDEX IF NOT EXISTS idx_posts_list ON posts(status, published_at DESC)`,
   `CREATE INDEX IF NOT EXISTS idx_posts_cat ON posts(category_id, status, published_at DESC)`,
   `CREATE TABLE IF NOT EXISTS pages (

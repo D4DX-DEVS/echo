@@ -176,7 +176,7 @@ export default async function Slug({ params }: { params: Promise<{ slug: string[
 
       <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_340px]">
         <div>
-          {showCat && <Link prefetch={false} href={categoryPath(cats, showCat)} className="inline-block rounded bg-accent px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-white">{showCat.name}</Link>}
+          {showCat && <Link prefetch={false} href={categoryPath(cats, showCat)} className="inline-block rounded bg-chip px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-white">{showCat.name}</Link>}
           <h1 className="text-2xl sm:text-[34px] font-bold leading-snug mt-3 text-balance">{post.title}</h1>
           {post.excerpt && <p className="italic text-muted text-lg mt-3 leading-relaxed">{post.excerpt}</p>}
 

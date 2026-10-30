@@ -5,7 +5,7 @@ import { ago } from "@/lib/format";
 type Props = { post: P; label?: string; size?: "lg" | "md" | "row" | "compact" | "tile"; video?: boolean; priority?: boolean };
 
 const Chip = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
-  <span className={`rounded bg-accent px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white ${className}`}>{children}</span>
+  <span className={`rounded bg-chip px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white ${className}`}>{children}</span>
 );
 
 export default function PostCard({ post, label, size = "md", video, priority }: Props) {

@@ -60,6 +60,15 @@ async function latestInCats(limit: number, opts: { cats: number[]; offset?: numb
   );
 }
 
+// Count of all posts for the admin heading: remembered for 5 minutes per Worker instance (counting reads every row),
+// and forgotten as soon as a post is saved or deleted.
+let total: { n: number; at: number } | undefined;
+export const forgetPostCount = () => { total = undefined; };
+export async function postCount() {
+  if (!total || Date.now() - total.at > 300_000) total = { n: Number((await q<{ n: number }>("SELECT COUNT(*) n FROM posts"))[0].n), at: Date.now() };
+  return total.n;
+}
+
 export async function countPosts(cats?: number[]) {
   const w = cats?.length ? ` AND id IN (SELECT post_id FROM post_categories WHERE category_id IN (${cats.map(() => "?").join(",")}))` : "";
   const r = await q<{ n: number }>(`SELECT COUNT(*) n FROM posts WHERE status='published'${w}`, cats ?? []);

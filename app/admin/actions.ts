@@ -3,13 +3,13 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { COOKIE, adminPassword, makeToken, verifyToken } from "@/lib/auth";
-import { q, run, slugify } from "@/lib/data";
+import { forgetPostCount, q, run, slugify } from "@/lib/data";
 import { hasVideo, youtubeId } from "@/lib/content";
 
 async function guard() {
   if (!(await verifyToken((await cookies()).get(COOKIE)?.value))) redirect("/admin/login");
 }
-const refresh = () => revalidatePath("/", "layout");
+const refresh = () => { forgetPostCount(); revalidatePath("/", "layout"); };
 const str = (f: FormData, k: string) => String(f.get(k) ?? "").trim();
 
 export async function login(_: string | undefined, f: FormData) {

@@ -45,6 +45,7 @@
   --color-muted: var(--muted);
   --color-line: var(--line);
   --color-accent: var(--accent);
+  --color-chip: #b3263a; /* category chips: white text on this passes WCAG AA (6.4:1) in light and dark */
   --color-nav: var(--nav);
   --color-page: var(--page);
   --color-brand-text: var(--brand-text);
