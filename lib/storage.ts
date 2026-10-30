@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import type { S3Client } from "@aws-sdk/client-s3";
 import { bindings } from "./cf.ts";
 
 const { R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET, R2_PUBLIC_URL } = process.env;
@@ -14,6 +14,8 @@ export async function putFile(key: string, body: Buffer, contentType: string): P
     return `${b.R2_PUBLIC_URL!.replace(/\/$/, "")}/${key}`;
   }
   if (r2Enabled) {
+    // loaded only here: the Worker uses the R2 binding above, and importing the SDK at the top would make every cold start pay for it
+    const { S3Client, PutObjectCommand } = await import("@aws-sdk/client-s3");
     s3 ??= new S3Client({
       region: "auto",
       endpoint: `https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,

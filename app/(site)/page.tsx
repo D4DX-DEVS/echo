@@ -5,7 +5,7 @@ import JsonLd from "@/components/JsonLd";
 import { getCategories, latest, withChildren } from "@/lib/data";
 import { abs, og, organization, siteName, siteUrl } from "@/lib/seo";
 
-export const revalidate = 600;
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },

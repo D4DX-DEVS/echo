@@ -3,13 +3,25 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { COOKIE, adminPassword, makeToken, verifyToken } from "@/lib/auth";
-import { forgetPostCount, q, run, slugify } from "@/lib/data";
+import { categoryPath, forgetPostCount, getCategories, q, run, slugify } from "@/lib/data";
 import { hasVideo, youtubeId } from "@/lib/content";
 
 async function guard() {
   if (!(await verifyToken((await cookies()).get(COOKIE)?.value))) redirect("/admin/login");
 }
+// Whole-site refresh: for changes to the menu (categories, pages).
 const refresh = () => { forgetPostCount(); revalidatePath("/", "layout"); };
+/**
+ * Refresh only the pages that show a post: the home page, the post itself and its category pages (and the parent category).
+ * Re-rendering every page on each save would cost far more CPU than the free Cloudflare plan allows; the rest catch up on their own timer.
+ */
+async function refreshPost(slugs: (string | undefined)[], categoryIds: (number | undefined)[]) {
+  forgetPostCount();
+  const cats = await getCategories();
+  const paths = new Set(["/", ...slugs.filter(Boolean).map((s) => `/${encodeURIComponent(s!)}`)]);
+  for (const id of categoryIds) for (let c = cats.find((x) => x.id === id); c; c = cats.find((x) => x.id === c!.parent_id)) paths.add(categoryPath(cats, c));
+  for (const p of paths) revalidatePath(p);
+}
 const str = (f: FormData, k: string) => String(f.get(k) ?? "").trim();
 
 export async function login(_: string | undefined, f: FormData) {
@@ -36,6 +48,7 @@ export async function savePost(_: string | undefined, f: FormData) {
   const yt = youtubeId(content);
   const image = str(f, "image") || (yt ? `https://img.youtube.com/vi/${yt}/hqdefault.jpg` : "");
   const vals = [slug, title, str(f, "excerpt"), content, image, Number(f.get("category_id")) || 1, str(f, "author") || "web desk", str(f, "status") === "draft" ? "draft" : "published", published, now];
+  const before = id ? (await q<{ slug: string; category_id: number }>("SELECT slug, category_id FROM posts WHERE id=?", [id]))[0] : undefined;
   try {
     let pid = id;
     if (id) await run("UPDATE posts SET slug=?,title=?,excerpt=?,content=?,image_set=CASE WHEN image=? THEN image_set ELSE 0 END,image=?,category_id=?,author=?,status=?,published_at=?,updated_at=?,admin_edited=1 WHERE id=?", [...vals.slice(0, 4), vals[4], ...vals.slice(4), id]); // vals[4] (the image) is used twice: for the image_set check and the new value
@@ -48,7 +61,7 @@ export async function savePost(_: string | undefined, f: FormData) {
   } catch (e) {
     return /UNIQUE/i.test(String(e)) ? "Slug already used by another post" : `Save failed: ${e}`;
   }
-  refresh();
+  await refreshPost([slug, before?.slug], [vals[5] as number, before?.category_id]);
   redirect(str(f, "return_to") === "videos" ? "/admin/videos?saved=1" : "/admin?saved=1");
 }
 
@@ -69,10 +82,11 @@ async function saveTags(postId: number, input: string) {
 
 export async function deletePost(f: FormData) {
   await guard();
+  const gone = (await q<{ slug: string; category_id: number }>("SELECT slug, category_id FROM posts WHERE id=?", [Number(f.get("id"))]))[0];
   await run("DELETE FROM posts WHERE id=?", [Number(f.get("id"))]);
   await run("DELETE FROM post_categories WHERE post_id=?", [Number(f.get("id"))]);
   await run("DELETE FROM post_tags WHERE post_id=?", [Number(f.get("id"))]);
-  refresh();
+  await refreshPost([gone?.slug], [gone?.category_id]);
   redirect("/admin?deleted=1");
 }
 

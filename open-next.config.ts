@@ -11,4 +11,7 @@ export default defineCloudflareConfig({
   incrementalCache: withRegionalCache(r2IncrementalCache, { mode: "long-lived", shouldLazilyUpdateOnCacheHit: true }),
   queue: memoryQueue,
   tagCache: d1NextTagCache,
+  // answer cached pages from the light routing layer without starting the full Next.js server: far less CPU per visit,
+  // which matters because the free plan stops a request at 10 ms of CPU
+  enableCacheInterception: true,
 });

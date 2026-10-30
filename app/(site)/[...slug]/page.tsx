@@ -12,7 +12,7 @@ import JsonLd from "@/components/JsonLd";
 import { breadcrumbs, describe, isoIST, og, organization } from "@/lib/seo";
 import { responsive } from "@/lib/images";
 
-export const revalidate = 900;
+export const revalidate = 21600;
 export const generateStaticParams = () => []; // render on first hit, then ISR-cache
 
 // URLs mirror WordPress: /post-slug, /parent-cat/child-cat, /cat/page/2, /page-slug

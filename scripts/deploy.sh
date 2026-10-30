@@ -37,3 +37,10 @@ for name in CF_API_TOKEN R2_SECRET_ACCESS_KEY R2_ACCESS_KEY_ID ADMIN_PASSWORD SE
 done
 
 npx wrangler deploy
+
+# Every deploy starts with an empty page cache, and on Cloudflare's free plan a page rendered from scratch sometimes fails
+# (error 1102). Open the home page, categories and newest articles once, repeating any that fail, so visitors get cached pages.
+# Skip with WARM=0 bash scripts/deploy.sh
+if [ "${WARM:-1}" = 1 ]; then
+  node scripts/warm-cache.mjs https://theecho.d4dx-fatwa.workers.dev 150 || true
+fi
