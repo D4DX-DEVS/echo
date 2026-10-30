@@ -3,7 +3,26 @@ import { useActionState, useRef, useState } from "react";
 import { savePost } from "@/app/admin/actions";
 import type { Category, Post } from "@/lib/data";
 
-async function upload(file: File): Promise<string> {
+/** Phone and camera photos are several MB; scale them to 1600px wide WebP before upload so pages stay fast. */
+async function shrink(file: File): Promise<File> {
+  if (!/^image\/(jpeg|png|webp)$/.test(file.type)) return file; // GIFs may be animated, AVIF is already small
+  try {
+    const bmp = await createImageBitmap(file);
+    if (bmp.width <= 1600 && file.size < 400_000) return file;
+    const scale = Math.min(1, 1600 / bmp.width);
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(bmp.width * scale);
+    canvas.height = Math.round(bmp.height * scale);
+    canvas.getContext("2d")!.drawImage(bmp, 0, 0, canvas.width, canvas.height);
+    const blob = await new Promise<Blob | null>((r) => canvas.toBlob(r, "image/webp", 0.82));
+    return blob && blob.size < file.size ? new File([blob], file.name.replace(/\.\w+$/, "") + ".webp", { type: "image/webp" }) : file;
+  } catch {
+    return file;
+  }
+}
+
+async function upload(original: File): Promise<string> {
+  const file = await shrink(original);
   const fd = new FormData();
   fd.append("file", file);
   const r = await fetch("/api/upload", { method: "POST", body: fd });

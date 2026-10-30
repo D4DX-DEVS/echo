@@ -1,6 +1,7 @@
 /** Columns added after the first release; applied (and ignored when already there) before SCHEMA so old databases catch up. */
 export const UPGRADES = [
   "ALTER TABLE posts ADD COLUMN has_video INTEGER NOT NULL DEFAULT 0",
+  "ALTER TABLE posts ADD COLUMN image_set INTEGER NOT NULL DEFAULT 0",
   "ALTER TABLE post_categories ADD COLUMN published_at TEXT",
   "ALTER TABLE post_categories ADD COLUMN status TEXT",
 ];
@@ -14,7 +15,7 @@ export const SCHEMA = [
     excerpt TEXT NOT NULL DEFAULT '', content TEXT NOT NULL DEFAULT '', image TEXT NOT NULL DEFAULT '',
     category_id INTEGER NOT NULL DEFAULT 1, author TEXT NOT NULL DEFAULT 'web desk',
     status TEXT NOT NULL DEFAULT 'published', published_at TEXT NOT NULL, updated_at TEXT NOT NULL,
-    admin_edited INTEGER NOT NULL DEFAULT 0, has_video INTEGER NOT NULL DEFAULT 0)`,
+    admin_edited INTEGER NOT NULL DEFAULT 0, has_video INTEGER NOT NULL DEFAULT 0, image_set INTEGER NOT NULL DEFAULT 0)`,
   `CREATE TABLE IF NOT EXISTS post_categories (
     post_id INTEGER NOT NULL, category_id INTEGER NOT NULL, published_at TEXT, status TEXT, PRIMARY KEY (post_id, category_id))`,
   `CREATE INDEX IF NOT EXISTS idx_pc_cat ON post_categories(category_id, post_id)`,

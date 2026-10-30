@@ -5,11 +5,11 @@ import { cached } from "./cache.ts";
 export type Category = { id: number; slug: string; name: string; parent_id: number; sort: number };
 export type Post = {
   id: number; slug: string; title: string; excerpt: string; content: string; image: string;
-  category_id: number; author: string; status: string; published_at: string; updated_at: string;
+  category_id: number; author: string; status: string; published_at: string; updated_at: string; image_set: number;
 };
 export type PostCard = Omit<Post, "content">;
 
-const CARD = "id,slug,title,excerpt,image,category_id,author,status,published_at,updated_at";
+const CARD = "id,slug,title,excerpt,image,image_set,category_id,author,status,published_at,updated_at";
 export const PAGE_SIZE = 24;
 
 // cache(): one query per request even though header, footer and the page all ask for these

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { PostCard as P } from "@/lib/data";
 import { ago } from "@/lib/format";
+import { responsive } from "@/lib/images";
 
 type Props = { post: P; label?: string; size?: "lg" | "md" | "row" | "compact" | "tile"; video?: boolean; priority?: boolean };
 
@@ -8,12 +9,22 @@ const Chip = ({ children, className = "" }: { children: React.ReactNode; classNa
   <span className={`rounded bg-chip px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white ${className}`}>{children}</span>
 );
 
+// how wide each card is on screen, so the browser picks the smallest sufficient copy
+const SIZES = {
+  lg: "(min-width: 1024px) 60vw, 100vw",
+  tile: "(min-width: 1024px) 35vw, (min-width: 640px) 33vw, 100vw",
+  md: "(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw",
+  row: "100px",
+  compact: "100px",
+};
+
 export default function PostCard({ post, label, size = "md", video, priority }: Props) {
   const href = `/${encodeURIComponent(post.slug)}`;
   const byline = <>{post.author} <span className="mx-1">·</span> {ago(post.published_at)}</>;
+  const pic = responsive(post.image, post.image_set);
   const img = post.image ? (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={post.image} alt="" loading={priority ? "eager" : "lazy"} fetchPriority={priority ? "high" : undefined} decoding="async" className="w-full h-full object-cover" />
+    <img src={pic.src} srcSet={pic.srcSet} sizes={pic.srcSet ? SIZES[size] : undefined} alt="" loading={priority ? "eager" : "lazy"} fetchPriority={priority ? "high" : undefined} decoding="async" className="w-full h-full object-cover" />
   ) : (
     <div className="w-full h-full grid place-items-center text-muted text-sm bg-surface">The Echo</div>
   );

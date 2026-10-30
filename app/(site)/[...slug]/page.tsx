@@ -10,6 +10,7 @@ import { fmtDateTime } from "@/lib/format";
 import { fixLazy } from "@/lib/content";
 import JsonLd from "@/components/JsonLd";
 import { breadcrumbs, describe, isoIST, og, organization } from "@/lib/seo";
+import { responsive } from "@/lib/images";
 
 export const revalidate = 900;
 export const generateStaticParams = () => []; // render on first hit, then ISR-cache
@@ -193,7 +194,7 @@ export default async function Slug({ params }: { params: Promise<{ slug: string[
 
           {post.image && (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={post.image} alt={post.title} fetchPriority="high" decoding="async" className="w-full rounded-2xl mt-6 aspect-[16/10] object-cover" />
+            <img src={responsive(post.image, post.image_set).src} srcSet={responsive(post.image, post.image_set).srcSet} sizes="(min-width: 1024px) 800px, 100vw" alt={post.title} fetchPriority="high" decoding="async" className="w-full rounded-2xl mt-6 aspect-[16/10] object-cover" />
           )}
           <div className="article mt-8" dangerouslySetInnerHTML={{ __html: fixLazy(post.content) }} />
         </div>

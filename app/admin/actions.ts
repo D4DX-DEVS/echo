@@ -38,7 +38,7 @@ export async function savePost(_: string | undefined, f: FormData) {
   const vals = [slug, title, str(f, "excerpt"), content, image, Number(f.get("category_id")) || 1, str(f, "author") || "web desk", str(f, "status") === "draft" ? "draft" : "published", published, now];
   try {
     let pid = id;
-    if (id) await run("UPDATE posts SET slug=?,title=?,excerpt=?,content=?,image=?,category_id=?,author=?,status=?,published_at=?,updated_at=?,admin_edited=1 WHERE id=?", [...vals, id]);
+    if (id) await run("UPDATE posts SET slug=?,title=?,excerpt=?,content=?,image_set=CASE WHEN image=? THEN image_set ELSE 0 END,image=?,category_id=?,author=?,status=?,published_at=?,updated_at=?,admin_edited=1 WHERE id=?", [...vals.slice(0, 4), vals[4], ...vals.slice(4), id]); // vals[4] (the image) is used twice: for the image_set check and the new value
     // admin-made posts get ids from 1,000,000 so they never collide with future WordPress ids
     else pid = await run("INSERT INTO posts(id,slug,title,excerpt,content,image,category_id,author,status,published_at,updated_at,admin_edited) VALUES(max((SELECT COALESCE(MAX(id),0) FROM posts), 999999) + 1,?,?,?,?,?,?,?,?,?,?,1)", vals);
     // Admin edits the primary category only; keep other imported memberships, make sure the primary one exists.
