@@ -44,7 +44,7 @@ export default function PostForm({ cats, post, tags = "" }: { cats: Category[]; 
   const date = (post?.published_at ?? new Date().toISOString()).slice(0, 16);
 
   return (
-    <form action={action} className="grid gap-6 xl:grid-cols-[1fr_320px] max-w-6xl">
+    <form action={action} className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_320px] max-w-6xl">
       <input type="hidden" name="id" value={post?.id ?? ""} />
       <input type="hidden" name="content" value={content} />
       <div className="space-y-4 min-w-0">

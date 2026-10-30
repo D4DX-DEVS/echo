@@ -53,7 +53,8 @@
   --font-title: var(--font-anek), var(--font-noto), sans-serif;
 }
 
-html { scroll-behavior: smooth; font-size: clamp(15px, 14px + 0.156vw, 17.5px); /* 16px at 1280, 17px at 1920; all rem sizes scale with it */ }
+/* 16px at 1280, 17px at 1920; written in rem so a larger default text size set in the browser or phone still scales everything */
+html { scroll-behavior: smooth; font-size: clamp(0.9375rem, 0.875rem + 0.156vw, 1.09375rem); }
 /* Show moon in light mode, sun in dark mode (pure CSS, so no hydration flicker). */
 .light-hide { display: none; }
 @media (prefers-color-scheme: dark) {
@@ -68,6 +69,7 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   line-height: 1.6;
+  overflow-wrap: anywhere; /* Malayalam joins words, so one "word" in a headline can be 40+ letters: break it rather than widen the page */
 }
 @layer base { a { color: inherit; } }
 ::selection { background: var(--accent); color: #fff; }
@@ -80,21 +82,32 @@ body {
 .card-title { line-height: 1.35; text-wrap: balance; }
 .section-title { display: flex; align-items: center; gap: 0.6rem; font-size: 1.9rem; font-weight: 800; line-height: 1.2; }
 .section-title::before { content: ""; width: 5px; height: 1.9rem; background: var(--accent); border-radius: 2px; }
-.card:hover .card-title { color: var(--accent); }
 .card .thumb { overflow: hidden; background: var(--surface); }
 .card .thumb img { transition: transform 0.4s ease; }
-.card:hover .thumb img { transform: scale(1.04); }
+/* hover effects only where there is a real hover: on touch screens they would stick after a tap */
+@media (hover: hover) {
+  .card:hover .card-title { color: var(--accent); }
+  .card:hover .thumb img { transform: scale(1.04); }
+}
 
-.article { font-size: 1.15rem; line-height: 1.95; }
+.article { position: relative; /* Instagram positions its embed absolutely and sizes it against the nearest positioned parent */ font-size: 1.15rem; line-height: 1.95; overflow-wrap: anywhere; /* long links and hashtags wrap instead of widening the page */ }
 .article > * + * { margin-top: 1.25em; }
 .article h2, .article h3 { font-weight: 700; line-height: 1.4; margin-top: 1.8em; }
 .article h2 { font-size: 1.5rem; }
 .article h3 { font-size: 1.25rem; }
 .article a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
 .article img, .article video { max-width: 100%; height: auto; border-radius: 8px; }
+/* old posts carry pixel widths in attributes and style="": none may be wider than the screen */
+.article *, .article [style] { max-width: 100%; box-sizing: border-box; }
+.article [style*="width"], .article .wp-caption { width: auto !important; max-width: 100% !important; }
+.article embed, .article object { width: 100%; }
+.article table { display: block; overflow-x: auto; }
+.article pre { overflow-x: auto; white-space: pre-wrap; }
 .article figure { margin: 1.5em 0; }
 .article figcaption { color: var(--muted); font-size: 0.9rem; margin-top: 0.4em; }
 .article iframe { max-width: 100%; border: 0; }
+.article iframe { width: 100% !important; } /* beats widths written inline by embed scripts */
+.article iframe, .article [style*="min-width"] { min-width: 0 !important; } /* Instagram embeds ask for 326px */
 .article iframe[src*="youtube"], .article iframe[src*="youtu.be"] { width: 100%; height: auto; aspect-ratio: 16 / 9; }
 .article blockquote { border-left: 4px solid var(--accent); padding-left: 1em; color: var(--muted); }
 .article ul { list-style: disc; padding-left: 1.5em; }
@@ -104,6 +117,10 @@ body {
   width: 100%; padding: 0.55rem 0.75rem; border: 1px solid var(--line); border-radius: 8px;
   background: var(--bg); color: var(--fg); font: inherit;
 }
+/* iPhones zoom the page when a field under 16px is focused */
+@media (max-width: 767px) { .field, select.field, textarea.field { font-size: 16px; } }
+/* phone held sideways: the big logo would take a third of the screen */
+@media (max-height: 480px) { .site-logo { height: 3.5rem; } }
 .field:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; padding: 0.5rem 1.1rem; border-radius: 10px;

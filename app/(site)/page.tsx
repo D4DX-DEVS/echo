@@ -34,7 +34,7 @@ export default async function Home() {
   // Videos: posts that actually contain a video, newest first (may repeat stories shown above).
   const videos = await latest(4, { video: true });
 
-  const grid = "grid gap-6 sm:grid-cols-2 lg:grid-cols-4";
+  const grid = "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4";
   const last = (a: { published_at: string }[]) => a[a.length - 1].published_at;
   const label = (p: { category_id: number }) => (p.category_id === 1 ? undefined : names[p.category_id]);
 
@@ -51,9 +51,9 @@ export default async function Home() {
       }} />
       <section>
         <Heading>Today&apos;s Stories</Heading>
-        <div className="grid gap-5 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
           {top[0] && <PostCard post={top[0]} label={label(top[0])} size="lg" priority />}
-          <div className="grid gap-5 sm:grid-cols-3 lg:grid-cols-1 lg:auto-rows-fr">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-3 lg:grid-cols-1 lg:auto-rows-fr">
             {top.slice(1, 4).map((p, i) => <PostCard key={p.id} post={p} label={label(p)} size="tile" eager={i === 0} />)}
           </div>
         </div>

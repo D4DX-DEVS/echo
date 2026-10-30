@@ -20,7 +20,7 @@ export default async function Header() {
       <ScrollFlag />
       <header className="wrap relative flex justify-center py-3 sm:py-4">
         <Link prefetch={false} href="/" aria-label="The Echo — home">
-          <Image src="/logo.png" alt="The Echo" width={512} height={441} priority className="h-24 sm:h-32 w-auto" />
+          <Image src="/logo.png" alt="The Echo" width={512} height={441} priority className="site-logo h-24 sm:h-32 w-auto" />
         </Link>
         <div className="absolute right-4 top-3 sm:top-4 flex items-center gap-2">
           {social.filter((s) => s.href).map((s) => (

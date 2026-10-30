@@ -4,7 +4,7 @@ import PostCard from "./PostCard";
 import type { PostCard as P } from "@/lib/data";
 
 const PAGE = 8;
-const grid = "grid gap-6 sm:grid-cols-2 lg:grid-cols-4";
+const grid = "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4";
 
 const Skeleton = () => (
   <div className="rounded-xl overflow-hidden bg-bg border border-line animate-pulse">

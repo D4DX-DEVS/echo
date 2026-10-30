@@ -10,7 +10,7 @@ export default async function Footer() {
   const quick = [...cats.filter((c) => !c.parent_id), ...cats.filter((c) => c.parent_id)];
   return (
     <footer className="mt-16 bg-nav text-white">
-      <div className="wrap py-10 grid gap-10 md:grid-cols-[1fr_1.4fr]">
+      <div className="wrap py-10 grid grid-cols-1 gap-10 md:grid-cols-[1fr_1.4fr]">
         <div>
           <Link prefetch={false} href="/" aria-label="The Echo — home" className="block w-fit">
             <Image src="/logo.png" alt="The Echo" width={512} height={441} className="h-24 w-auto brightness-0 invert" />

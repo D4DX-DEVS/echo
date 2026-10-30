@@ -26,7 +26,7 @@ export default async function Search({ searchParams }: { searchParams: Promise<{
         </div>
       )}
       {!term && <p className="py-12 text-center text-muted">Type a word above to search The Echo.</p>}
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {posts.map((x) => <PostCard key={x.id} post={x} />)}
       </div>
       {term && <Pagination base="" page={page} pages={rows.length > PAGE_SIZE ? page + 1 : page} query={term} />}

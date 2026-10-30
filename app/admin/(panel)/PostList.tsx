@@ -63,12 +63,12 @@ export default async function PostList({ sp, base, title, video }: { sp: ListPar
         {video ? <VideoAdd cats={cats} defaultCat={cats.find((c) => /video/.test(c.slug))?.id ?? cats[0].id} /> : <Link href="/admin/posts/new" className="btn ml-auto">+ New post</Link>}
       </div>
       <form className="flex gap-2 mb-4 flex-wrap">
-        <input name="q" aria-label="Search title" defaultValue={sp.q} placeholder="Search title…" className="field !w-64 !rounded-xl" />
-        <select name="cat" aria-label="Category" defaultValue={cat ? String(cat.id) : ""} className="field !w-auto !rounded-xl">
+        <input name="q" aria-label="Search title" defaultValue={sp.q} placeholder="Search title…" className="field !w-full sm:!w-64 !rounded-xl" />
+        <select name="cat" aria-label="Category" defaultValue={cat ? String(cat.id) : ""} className="field !w-auto max-w-full !rounded-xl">
           <option value="">All categories</option>
           {cats.map((c) => <option key={c.id} value={c.id}>{c.parent_id ? "— " : ""}{c.name}</option>)}
         </select>
-        <select name="status" aria-label="Status" defaultValue={status ?? ""} className="field !w-auto !rounded-xl">
+        <select name="status" aria-label="Status" defaultValue={status ?? ""} className="field !w-auto max-w-full !rounded-xl">
           <option value="">All</option><option value="published">Published</option><option value="draft">Draft</option>
         </select>
         <button className="btn ghost">Filter</button>

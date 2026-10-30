@@ -107,7 +107,7 @@ export default async function Slug({ params }: { params: Promise<{ slug: string[
     return (
       <div className="wrap py-8">
         <h1 className="section-title mb-8">{r.tag.name}</h1>
-        <div className="grid gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
           {posts.map((p) => <PostCard key={p.id} post={p} />)}
         </div>
         {posts.length === PAGE_SIZE && <LoadMore tag={r.tag.slug} before={posts[posts.length - 1].published_at} />}
@@ -126,7 +126,7 @@ export default async function Slug({ params }: { params: Promise<{ slug: string[
       <div className="wrap py-8">
         <JsonLd data={breadcrumbs([{ name: "Home", path: "/" }, ...(parentCat ? [{ name: parentCat.name, path: categoryPath(cats, parentCat) }] : []), { name: r.cat.name, path: r.base }])} />
         <h1 className="section-title mb-8">{r.cat.name}</h1>
-        <div className="grid gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
           {posts.map((p) => <PostCard key={p.id} post={p} label={names[p.category_id]} />)}
         </div>
         {posts.length === PAGE_SIZE && <LoadMore cat={r.cat.slug} before={posts[posts.length - 1].published_at} names={names} />}
@@ -175,8 +175,8 @@ export default async function Slug({ params }: { params: Promise<{ slug: string[
         <span>›</span><span>Article</span>
       </nav>
 
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_340px]">
-        <div>
+      <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_340px]">
+        <div className="min-w-0">
           {showCat && <Link prefetch={false} href={categoryPath(cats, showCat)} className="relative inline-block rounded bg-chip px-2.5 py-1 text-[0.8rem] before:absolute before:inset-x-0 before:-inset-y-3 before:content-[''] font-bold uppercase tracking-wide text-white">{showCat.name}</Link>}
           <h1 className="text-2xl sm:text-[34px] font-bold leading-snug mt-3 text-balance">{post.title}</h1>
           {post.excerpt && <p className="text-muted text-lg mt-3 leading-relaxed">{post.excerpt}</p>}
@@ -199,7 +199,7 @@ export default async function Slug({ params }: { params: Promise<{ slug: string[
           <div className="article mt-8" dangerouslySetInnerHTML={{ __html: fixLazy(post.content) }} />
         </div>
 
-        <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start">
+        <aside className="min-w-0 space-y-6 lg:sticky lg:top-24 lg:self-start">
           {recent.length > 0 && (
             <section className={card}>
               <h2 className="section-title !text-xl mb-2">Latest News</h2>
@@ -235,7 +235,7 @@ export default async function Slug({ params }: { params: Promise<{ slug: string[
       {related.length > 0 && (
         <section className="mt-14">
           <h2 className="section-title mb-5">Related Stories</h2>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {related.map((p) => <PostCard key={p.id} post={p} />)}
           </div>
         </section>
