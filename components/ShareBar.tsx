@@ -2,7 +2,7 @@
 import { useState } from "react";
 import BrandIcon from "./BrandIcon";
 
-const btn = "w-9 h-9 rounded-full grid place-items-center text-white hover:opacity-85 hover:-translate-y-0.5 transition";
+const btn = "w-[44px] h-[44px] rounded-full grid place-items-center text-white hover:opacity-85 hover:-translate-y-0.5 transition";
 
 export default function ShareBar({ title, url }: { title: string; url: string }) {
   const [copied, setCopied] = useState(false);

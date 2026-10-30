@@ -168,25 +168,25 @@ export default async function Slug({ params }: { params: Promise<{ slug: string[
         ...(tags.length > 0 && { keywords: tags.map((t) => t.name).join(", ") }),
       }} />
       <JsonLd data={breadcrumbs(trail)} />
-      <nav aria-label="Breadcrumb" className="text-xs text-muted flex flex-wrap items-center gap-1.5 mb-5">
-        <Link prefetch={false} href="/" className="hover:text-accent">Home</Link>
-        {parent && <><span>›</span><Link prefetch={false} href={categoryPath(cats, parent)} className="hover:text-accent">{parent.name}</Link></>}
-        {showCat && <><span>›</span><Link prefetch={false} href={categoryPath(cats, showCat)} className="hover:text-accent">{showCat.name}</Link></>}
+      <nav aria-label="Breadcrumb" className="text-[0.8rem] text-muted flex flex-wrap items-center gap-1.5 mb-5">
+        <Link prefetch={false} href="/" className="inline-block px-2 -mx-2 py-4 -my-4 hover:text-accent">Home</Link>
+        {parent && <><span>›</span><Link prefetch={false} href={categoryPath(cats, parent)} className="inline-block px-2 -mx-2 py-4 -my-4 hover:text-accent">{parent.name}</Link></>}
+        {showCat && <><span>›</span><Link prefetch={false} href={categoryPath(cats, showCat)} className="inline-block px-2 -mx-2 py-4 -my-4 hover:text-accent">{showCat.name}</Link></>}
         <span>›</span><span>Article</span>
       </nav>
 
       <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_340px]">
         <div>
-          {showCat && <Link prefetch={false} href={categoryPath(cats, showCat)} className="inline-block rounded bg-chip px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-white">{showCat.name}</Link>}
+          {showCat && <Link prefetch={false} href={categoryPath(cats, showCat)} className="relative inline-block rounded bg-chip px-2.5 py-1 text-[0.8rem] before:absolute before:inset-x-0 before:-inset-y-3 before:content-[''] font-bold uppercase tracking-wide text-white">{showCat.name}</Link>}
           <h1 className="text-2xl sm:text-[34px] font-bold leading-snug mt-3 text-balance">{post.title}</h1>
-          {post.excerpt && <p className="italic text-muted text-lg mt-3 leading-relaxed">{post.excerpt}</p>}
+          {post.excerpt && <p className="text-muted text-lg mt-3 leading-relaxed">{post.excerpt}</p>}
 
           <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <span className="w-11 h-11 rounded-full bg-nav text-white grid place-items-center font-bold">{post.author.trim().charAt(0).toUpperCase()}</span>
               <div>
                 <p className="font-semibold leading-tight">{post.author}</p>
-                <p className="text-xs text-muted">Published on: {fmtDateTime(post.published_at)}</p>
+                <p className="text-[0.8rem] text-muted">Published on: {fmtDateTime(post.published_at)}</p>
               </div>
             </div>
             <ShareBar title={post.title} url={url} />
@@ -213,7 +213,7 @@ export default async function Slug({ params }: { params: Promise<{ slug: string[
                 {more.map((p, i) => (
                   <li key={p.id}>
                     <Link prefetch={false} href={`/${encodeURIComponent(p.slug)}`} className="card flex items-start gap-3 py-3">
-                      <span className="shrink-0 w-8 h-8 rounded-full bg-surface grid place-items-center text-xs font-bold">{String(i + 1).padStart(2, "0")}</span>
+                      <span className="shrink-0 w-8 h-8 rounded-full bg-surface grid place-items-center text-[0.8rem] font-bold">{String(i + 1).padStart(2, "0")}</span>
                       <span className="card-title font-semibold text-[15px]">{p.title}</span>
                     </Link>
                   </li>
@@ -225,7 +225,7 @@ export default async function Slug({ params }: { params: Promise<{ slug: string[
             <section className={card}>
               <h2 className="section-title !text-xl mb-3">Tags</h2>
               <div className="flex flex-wrap gap-2">
-                {tags.map((t) => <Link prefetch={false} key={t.id} href={`/tag/${encodeURIComponent(t.slug)}`} className="text-sm px-3 py-1 rounded-full bg-surface hover:text-accent">{t.name}</Link>)}
+                {tags.map((t) => <Link prefetch={false} key={t.id} href={`/tag/${encodeURIComponent(t.slug)}`} className="text-sm px-3 py-2.5 rounded-full bg-surface hover:text-accent">{t.name}</Link>)}
               </div>
             </section>
           )}

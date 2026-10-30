@@ -54,7 +54,7 @@ export default async function Home() {
         <div className="grid gap-5 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
           {top[0] && <PostCard post={top[0]} label={label(top[0])} size="lg" priority />}
           <div className="grid gap-5 sm:grid-cols-3 lg:grid-cols-1 lg:auto-rows-fr">
-            {top.slice(1, 4).map((p) => <PostCard key={p.id} post={p} label={label(p)} size="tile" />)}
+            {top.slice(1, 4).map((p, i) => <PostCard key={p.id} post={p} label={label(p)} size="tile" eager={i === 0} />)}
           </div>
         </div>
       </section>

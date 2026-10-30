@@ -19,7 +19,13 @@ export default async function Search({ searchParams }: { searchParams: Promise<{
         <input name="q" defaultValue={term} placeholder="Search news…" className="field" autoFocus />
         <button className="btn">Search</button>
       </form>
-      {term && posts.length === 0 && <p className="text-muted">No results for “{term}”.</p>}
+      {term && posts.length === 0 && (
+        <div className="py-12 text-center">
+          <p className="text-xl font-semibold">No results for “{term}”</p>
+          <p className="mt-2 text-muted">Check the spelling, or try fewer or different words.</p>
+        </div>
+      )}
+      {!term && <p className="py-12 text-center text-muted">Type a word above to search The Echo.</p>}
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {posts.map((x) => <PostCard key={x.id} post={x} />)}
       </div>

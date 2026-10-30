@@ -62,7 +62,7 @@ export default function LoadMore({ cat, tag, before, video, names }: { cat?: str
           <button
             onClick={more}
             disabled={busy}
-            className="btn-outline inline-flex items-center gap-2 rounded-full px-8 py-2 text-sm font-semibold active:scale-95 transition disabled:opacity-70 disabled:cursor-wait"
+            className="btn-outline inline-flex items-center gap-2 rounded-full px-8 py-2 min-h-[44px] text-sm font-semibold active:scale-95 transition disabled:opacity-70 disabled:cursor-wait"
           >
             {busy ? (
               <>
