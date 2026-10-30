@@ -21,7 +21,12 @@ trap restore EXIT
 
 rm -f .env .env.local
 rm -rf .next/cache .open-next
-npx opennextjs-cloudflare build
+# fetching Google Fonts right after the cache is cleared sometimes fails once; a retry (without clearing again) works
+for attempt in 1 2 3; do
+  npx opennextjs-cloudflare build && break
+  [ "$attempt" = 3 ] && exit 1
+  echo "Build failed, retrying (attempt $((attempt + 1)) of 3)..."
+done
 
 for name in CF_API_TOKEN R2_SECRET_ACCESS_KEY R2_ACCESS_KEY_ID ADMIN_PASSWORD SESSION_SECRET CLOUDFLARE_DEPLOY_TOKEN; do
   value="${!name:-}"
