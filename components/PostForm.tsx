@@ -2,7 +2,7 @@
 import { useActionState, useRef, useState } from "react";
 import { savePost } from "@/app/admin/actions";
 import type { Category, Post } from "@/lib/data";
-import { videoHtml } from "@/lib/content";
+import { autoP, videoHtml } from "@/lib/content";
 import { uploadImage, uploadVideo, videoThumbnail } from "@/lib/upload-client";
 
 export default function PostForm({ cats, post, tags = "" }: { cats: Category[]; post?: Post; tags?: string }) {
@@ -60,10 +60,10 @@ export default function PostForm({ cats, post, tags = "" }: { cats: Category[]; 
             <button type="button" className="btn ghost sm" onClick={() => { const u = prompt("Link URL"); if (u) wrap(`<a href="${u}">`, "</a>"); }}>Link</button>
             <button type="button" className="btn ghost sm" onClick={() => wrap("<blockquote>", "</blockquote>")}>Quote</button>
             <button type="button" className="btn ghost sm" onClick={() => {
-              const u = prompt("Video link (YouTube, or a direct .mp4 / .webm link)");
+              const u = prompt("Link to embed (YouTube, X, Instagram, Facebook, or a direct .mp4 / .webm link)");
               if (!u) return;
               const html = videoHtml(u);
-              if (!html) return setMsg("Please paste a YouTube link, or a direct link to an .mp4, .webm or .mov file");
+              if (!html) return setMsg("Please paste a YouTube, X, Instagram or Facebook link, or a direct link to an .mp4, .webm or .mov file");
               setMsg("");
               wrap(html);
             }}>Video link</button>
@@ -73,7 +73,7 @@ export default function PostForm({ cats, post, tags = "" }: { cats: Category[]; 
           </div>
           {msg && <p role="status" className="text-sm text-muted mb-2">{msg}</p>}
           {preview ? (
-            <div className="article border border-line rounded-lg p-4 min-h-96" dangerouslySetInnerHTML={{ __html: content }} />
+            <div className="article border border-line rounded-lg p-4 min-h-96" dangerouslySetInnerHTML={{ __html: autoP(content) }} />
           ) : (
             <textarea ref={ta} value={content} onChange={(e) => setContent(e.target.value)} rows={22} className="field font-mono !text-sm" />
           )}
@@ -108,6 +108,12 @@ export default function PostForm({ cats, post, tags = "" }: { cats: Category[]; 
           <label className="btn ghost sm mt-2 cursor-pointer">Browse photo<input type="file" accept="image/*" hidden onChange={pick(setImage)} /></label>
           {msg && <p className="text-xs text-muted mt-1">{msg}</p>}
         </div>
+        {post?.status === "published" && (
+          <div className="text-sm font-medium">Facebook preview not updating?
+            <a href={`https://developers.facebook.com/tools/debug/?q=${encodeURIComponent(`${process.env.NEXT_PUBLIC_SITE_URL || "https://theecho.in"}/${encodeURIComponent(post.slug)}`)}`} target="_blank" rel="noreferrer" className="btn ghost sm mt-2 block text-center">Refresh Facebook preview</a>
+            <p className="text-xs text-muted font-normal mt-1">Opens Facebook&apos;s Sharing Debugger for this post. Click &quot;Scrape Again&quot; there, then share the link again.</p>
+          </div>
+        )}
       </aside>
     </form>
   );
