@@ -8,4 +8,4 @@ export async function middleware(req: NextRequest) {
   return NextResponse.redirect(new URL("/admin/login", req.url));
 }
 
-export const config = { matcher: ["/admin/:path*", "/api/upload"] };
+export const config = { matcher: ["/admin/:path*", "/api/upload", "/api/media"] };

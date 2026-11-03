@@ -11,6 +11,10 @@ export default function PostForm({ cats, post, tags = "" }: { cats: Category[]; 
   const [content, setContent] = useState(post?.content ?? "");
   const [preview, setPreview] = useState(false);
   const [msg, setMsg] = useState("");
+  const [lib, setLib] = useState<{ image: string; title: string }[] | null>(null);
+  const findMedia = async (term: string) => {
+    try { setLib(await (await fetch(`/api/media?q=${encodeURIComponent(term)}`)).json()); } catch { setMsg("Search failed"); }
+  };
   const ta = useRef<HTMLTextAreaElement>(null);
 
   const wrap = (open: string, close = "") => {
@@ -104,8 +108,39 @@ export default function PostForm({ cats, post, tags = "" }: { cats: Category[]; 
         </label>
         <div className="text-sm font-medium">Featured image
           {image && /* eslint-disable-next-line @next/next/no-img-element */ <img src={image} alt="" className="mt-2 rounded-lg aspect-video object-cover w-full" />}
-          <input name="image" value={image} onChange={(e) => setImage(e.target.value)} placeholder="https://…" className="field mt-2" />
+          <input type="hidden" name="image" value={image} />
+          <div
+            tabIndex={0}
+            onPaste={async (e) => {
+              const f = [...e.clipboardData.files].find((x) => x.type.startsWith("image/"));
+              const text = e.clipboardData.getData("text").trim();
+              if (!f && !/^https?:\/\//.test(text)) return;
+              e.preventDefault();
+              if (!f) return setImage(text);
+              setMsg("Uploading…");
+              try { setImage(await uploadImage(f)); setMsg(""); } catch (x) { setMsg(String(x)); }
+            }}
+            className="field mt-2 text-center text-muted font-normal cursor-text"
+          >Click here, then press Ctrl+V to paste a copied photo</div>
           <label className="btn ghost sm mt-2 cursor-pointer">Browse photo<input type="file" accept="image/*" hidden onChange={pick(setImage)} /></label>
+          <button type="button" className="btn ghost sm mt-2 ml-2" onClick={() => { setLib(lib ? null : []); if (!lib) findMedia(""); }}>Search library</button>
+          {image && <button type="button" className="btn ghost sm mt-2 ml-2" onClick={() => setImage("")}>Remove</button>}
+          {lib && (
+            <div className="mt-2">
+              <input
+                placeholder="Search by post title, press Enter"
+                className="field"
+                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); findMedia(e.currentTarget.value); } }}
+              />
+              <div className="grid grid-cols-3 gap-1.5 mt-2 max-h-72 overflow-y-auto">
+                {lib.map((m) => (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img key={m.image} src={m.image} alt={m.title} title={m.title} loading="lazy" onClick={() => { setImage(m.image); setLib(null); }} className="aspect-video object-cover rounded cursor-pointer hover:opacity-80" />
+                ))}
+                {!lib.length && <p className="col-span-3 text-xs text-muted font-normal">No photos found</p>}
+              </div>
+            </div>
+          )}
           {msg && <p className="text-xs text-muted mt-1">{msg}</p>}
         </div>
         {post?.status === "published" && (
