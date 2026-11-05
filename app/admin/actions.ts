@@ -131,7 +131,7 @@ export async function savePage(f: FormData) {
   const title = str(f, "title");
   if (!title) return;
   const slug = slugify(str(f, "slug") || title);
-  const now = new Date().toISOString();
+  const now = istNow();
   await run("INSERT INTO pages(slug,title,content,updated_at) VALUES(?,?,?,?) ON CONFLICT(slug) DO UPDATE SET title=excluded.title, content=excluded.content, updated_at=excluded.updated_at", [slug, title, String(f.get("content") ?? ""), now]);
   refresh();
   redirect("/admin/pages?saved=1");
