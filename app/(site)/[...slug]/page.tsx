@@ -6,6 +6,7 @@ import PostCard from "@/components/PostCard";
 import LoadMore from "@/components/LoadMore";
 import { PAGE_SIZE, categoryPath, getCategories, getPostTags, getTag, type Tag, getPage, getPost, latest, withChildren } from "@/lib/data";
 import ShareBar from "@/components/ShareBar";
+import EditLink from "@/components/EditLink";
 import { fmtDateTime } from "@/lib/format";
 import { fixLazy } from "@/lib/content";
 import JsonLd from "@/components/JsonLd";
@@ -173,6 +174,7 @@ export default async function Slug({ params }: { params: Promise<{ slug: string[
         {parent && <><span>›</span><Link prefetch={false} href={categoryPath(cats, parent)} className="inline-block px-2 -mx-2 py-4 -my-4 hover:text-accent">{parent.name}</Link></>}
         {showCat && <><span>›</span><Link prefetch={false} href={categoryPath(cats, showCat)} className="inline-block px-2 -mx-2 py-4 -my-4 hover:text-accent">{showCat.name}</Link></>}
         <span>›</span><span>Article</span>
+        <EditLink id={post.id} />
       </nav>
 
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_340px]">

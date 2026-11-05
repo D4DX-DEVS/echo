@@ -3,6 +3,7 @@ import { useActionState, useRef, useState } from "react";
 import { savePost } from "@/app/admin/actions";
 import type { Category, Post } from "@/lib/data";
 import { autoP, videoHtml } from "@/lib/content";
+import { istNow } from "@/lib/format";
 import { uploadImage, uploadVideo, videoThumbnail } from "@/lib/upload-client";
 
 export default function PostForm({ cats, post, tags = "" }: { cats: Category[]; post?: Post; tags?: string }) {
@@ -45,7 +46,7 @@ export default function PostForm({ cats, post, tags = "" }: { cats: Category[]; 
       setMsg("");
     } catch (x) { setMsg(x instanceof Error ? x.message : "Upload failed"); }
   };
-  const date = (post?.published_at ?? new Date().toISOString()).slice(0, 16);
+  const date = (post?.published_at ?? istNow()).slice(0, 16);
 
   return (
     <form action={action} className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_320px] max-w-6xl">
@@ -98,7 +99,7 @@ export default function PostForm({ cats, post, tags = "" }: { cats: Category[]; 
           <input name="tags" defaultValue={tags} placeholder="kerala, politics" className="field mt-1" />
         </label>
         <label className="block text-sm font-medium">Slug (URL)
-          <input name="slug" defaultValue={post?.slug} placeholder="auto from title" className="field mt-1" />
+          <input name="slug" defaultValue={post?.slug} placeholder="auto: English translation of the title" className="field mt-1" />
         </label>
         <label className="block text-sm font-medium">Author
           <input name="author" defaultValue={post?.author ?? "web desk"} className="field mt-1" />

@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { COOKIE, adminPassword, makeToken, verifyToken } from "@/lib/auth";
 import { categoryPath, forgetPostCount, getCategories, q, run, slugify } from "@/lib/data";
 import { hasVideo, youtubeId } from "@/lib/content";
+import { istNow } from "@/lib/format";
 
 async function guard() {
   if (!(await verifyToken((await cookies()).get(COOKIE)?.value))) redirect("/admin/login");
@@ -24,14 +25,28 @@ async function refreshPost(slugs: (string | undefined)[], categoryIds: (number |
 }
 const str = (f: FormData, k: string) => String(f.get(k) ?? "").trim();
 
+/** URL slug from the English translation of a non-English title; falls back to the title itself if translating fails. */
+async function englishSlug(title: string) {
+  if (!/[^\x00-\x7f]/.test(title)) return slugify(title);
+  try {
+    const r = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=en&dt=t&q=${encodeURIComponent(title)}`, { signal: AbortSignal.timeout(4000) });
+    const en = ((await r.json())[0] as [string][]).map((s) => s[0]).join("").trim();
+    const s = en ? slugify(en) : "";
+    if (s) return s.length > 80 ? s.slice(0, 80).replace(/-[^-]*$/, "") : s; // cut at a word boundary
+  } catch {}
+  return slugify(title);
+}
+
 export async function login(_: string | undefined, f: FormData) {
   if (str(f, "password") !== adminPassword()) return "Wrong password";
   (await cookies()).set(COOKIE, await makeToken(), { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/", maxAge: 7 * 86400 });
+  (await cookies()).set("echo_editor", "1", { sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/", maxAge: 7 * 86400 }); // readable by EditLink; grants nothing
   redirect("/admin");
 }
 
 export async function logout() {
   (await cookies()).delete(COOKIE);
+  (await cookies()).delete("echo_editor");
   redirect("/admin/login");
 }
 
@@ -40,8 +55,8 @@ export async function savePost(_: string | undefined, f: FormData) {
   const id = Number(f.get("id")) || 0;
   const title = str(f, "title");
   if (!title) return "Title required";
-  const slug = slugify(str(f, "slug") || title);
-  const now = new Date().toISOString().slice(0, 19);
+  const slug = str(f, "slug") ? slugify(str(f, "slug")) : await englishSlug(title);
+  const now = istNow();
   const published = str(f, "published_at") || now;
   const content = String(f.get("content") ?? "");
   // video posts without a featured image get the YouTube thumbnail, same as the import backfill

@@ -7,6 +7,9 @@ export const fmtDate = (iso: string) =>
 export const fmtDateTime = (iso: string) =>
   wall(iso).toLocaleString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "numeric", minute: "2-digit", hour12: true, timeZone: "UTC" });
 
+/** Current time as IST wall-clock ("2026-11-05T13:28:00"), the form stored dates use; plain toISOString() would be 5½ hours behind. */
+export const istNow = () => new Date(Date.now() + 5.5 * 3600e3).toISOString().slice(0, 19);
+
 /** "7 hours ago" for recent posts, a date otherwise. */
 export function ago(iso: string) {
   const mins = Math.round((Date.now() - new Date(iso + "+05:30").getTime()) / 60000);
