@@ -6,6 +6,7 @@ import { COOKIE, adminPassword, makeToken, verifyToken } from "@/lib/auth";
 import { categoryPath, forgetPostCount, getCategories, q, run, slugify } from "@/lib/data";
 import { hasVideo, youtubeId } from "@/lib/content";
 import { istNow } from "@/lib/format";
+import { ensurePv } from "@/lib/analytics";
 
 async function guard() {
   if (!(await verifyToken((await cookies()).get(COOKIE)?.value))) redirect("/admin/login");
@@ -124,6 +125,13 @@ export async function deleteCategory(f: FormData) {
   if (Number(n) === 0) await run("DELETE FROM categories WHERE id=?", [id]);
   refresh();
   redirect("/admin/categories?deleted=1");
+}
+
+export async function deleteAnalytics() {
+  await guard();
+  await ensurePv();
+  await run("DELETE FROM pv");
+  redirect("/admin/analytics?deleted=1");
 }
 
 export async function savePage(f: FormData) {

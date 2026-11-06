@@ -6,7 +6,17 @@ export const UPGRADES = [
   "ALTER TABLE post_categories ADD COLUMN status TEXT",
 ];
 
+/** One row per page view (anonymous, kept 30 days), written by /api/collect and read by the admin Analytics page. */
+export const PV_SCHEMA = [
+  `CREATE TABLE IF NOT EXISTS pv (
+    id TEXT PRIMARY KEY, t INTEGER NOT NULL, kind TEXT NOT NULL, post INTEGER, cat INTEGER, vid TEXT NOT NULL, sid TEXT NOT NULL,
+    dev TEXT NOT NULL, src TEXT NOT NULL, ref TEXT NOT NULL DEFAULT '', ret INTEGER NOT NULL DEFAULT 0,
+    active INTEGER NOT NULL DEFAULT 0, scroll INTEGER NOT NULL DEFAULT 0) WITHOUT ROWID`,
+  `CREATE INDEX IF NOT EXISTS idx_pv_t ON pv(t)`,
+];
+
 export const SCHEMA = [
+  ...PV_SCHEMA,
   `CREATE TABLE IF NOT EXISTS categories (
     id INTEGER PRIMARY KEY, slug TEXT NOT NULL UNIQUE, name TEXT NOT NULL,
     parent_id INTEGER NOT NULL DEFAULT 0, sort INTEGER NOT NULL DEFAULT 0)`,

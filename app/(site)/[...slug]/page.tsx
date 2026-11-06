@@ -7,6 +7,7 @@ import LoadMore from "@/components/LoadMore";
 import { PAGE_SIZE, categoryPath, getCategories, getPostTags, getTag, type Tag, getPage, getPost, latest, withChildren } from "@/lib/data";
 import ShareBar from "@/components/ShareBar";
 import EditLink from "@/components/EditLink";
+import Track from "@/components/Track";
 import { fmtDateTime } from "@/lib/format";
 import { fixLazy } from "@/lib/content";
 import JsonLd from "@/components/JsonLd";
@@ -95,6 +96,7 @@ export default async function Slug({ params }: { params: Promise<{ slug: string[
   if (r.kind === "page")
     return (
       <div className="wrap max-w-3xl py-10">
+        <Track kind="page" />
         <h1 className="text-3xl font-extrabold mb-6">{r.page.title}</h1>
         <div className="article" dangerouslySetInnerHTML={{ __html: fixLazy(r.page.content) }} />
       </div>
@@ -107,6 +109,7 @@ export default async function Slug({ params }: { params: Promise<{ slug: string[
     if (!posts.length && r.page > 1) notFound();
     return (
       <div className="wrap py-8">
+        <Track kind="tag" />
         <h1 className="section-title mb-8">{r.tag.name}</h1>
         <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
           {posts.map((p) => <PostCard key={p.id} post={p} />)}
@@ -126,6 +129,7 @@ export default async function Slug({ params }: { params: Promise<{ slug: string[
     return (
       <div className="wrap py-8">
         <JsonLd data={breadcrumbs([{ name: "Home", path: "/" }, ...(parentCat ? [{ name: parentCat.name, path: categoryPath(cats, parentCat) }] : []), { name: r.cat.name, path: r.base }])} />
+        <Track kind="category" cat={r.cat.id} />
         <h1 className="section-title mb-8">{r.cat.name}</h1>
         <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
           {posts.map((p) => <PostCard key={p.id} post={p} label={names[p.category_id]} />)}
@@ -169,6 +173,7 @@ export default async function Slug({ params }: { params: Promise<{ slug: string[
         ...(tags.length > 0 && { keywords: tags.map((t) => t.name).join(", ") }),
       }} />
       <JsonLd data={breadcrumbs(trail)} />
+      <Track kind="article" post={post.id} cat={post.category_id} />
       <nav aria-label="Breadcrumb" className="text-[0.8rem] text-muted flex flex-wrap items-center gap-1.5 mb-5">
         <Link prefetch={false} href="/" className="inline-block px-2 -mx-2 py-4 -my-4 hover:text-accent">Home</Link>
         {parent && <><span>›</span><Link prefetch={false} href={categoryPath(cats, parent)} className="inline-block px-2 -mx-2 py-4 -my-4 hover:text-accent">{parent.name}</Link></>}

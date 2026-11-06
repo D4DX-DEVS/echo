@@ -8,6 +8,7 @@ const icon = (d: string) => (
 const items = [
   { href: "/admin", label: "Posts", d: "M4 5h16M4 10h16M4 15h10M4 20h7" },
   { href: "/admin/videos", label: "Videos", d: "M5 4l14 8-14 8z" },
+  { href: "/admin/analytics", label: "Analytics", d: "M4 20V10M10 20V4M16 20v-7M22 20H2" },
   { href: "/admin/posts/new", label: "New post", d: "M12 5v14M5 12h14" },
   { href: "/admin/categories", label: "Categories", d: "M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z" },
   { href: "/admin/pages", label: "Pages", d: "M7 3h8l4 4v14H7zM14 3v5h5" },

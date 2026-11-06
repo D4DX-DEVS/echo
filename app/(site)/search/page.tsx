@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import PostCard from "@/components/PostCard";
 import Pagination from "@/components/Pagination";
+import Track from "@/components/Track";
 import { PAGE_SIZE, search } from "@/lib/data";
 
 export const metadata: Metadata = { title: "Search", robots: { index: false } };
@@ -14,6 +15,7 @@ export default async function Search({ searchParams }: { searchParams: Promise<{
 
   return (
     <div className="wrap py-8">
+      <Track kind="search" />
       <h1 className="sr-only">Search</h1>
       <form action="/search" className="max-w-xl mb-8 flex gap-2">
         <input name="q" defaultValue={term} placeholder="Search news…" className="field" autoFocus />

@@ -2,6 +2,7 @@ import PostCard from "@/components/PostCard";
 import LoadMore from "@/components/LoadMore";
 import type { Metadata } from "next";
 import JsonLd from "@/components/JsonLd";
+import Track from "@/components/Track";
 import { getCategories, latest, withChildren } from "@/lib/data";
 import { abs, og, organization, siteName, siteUrl } from "@/lib/seo";
 
@@ -40,6 +41,7 @@ export default async function Home() {
 
   return (
     <div className="wrap py-8 space-y-14">
+      <Track kind="home" />
       <h1 className="sr-only">The Echo: Malayalam news from Kerala, India and the world</h1>
       <JsonLd data={{
         "@context": "https://schema.org",
