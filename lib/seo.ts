@@ -13,7 +13,8 @@ export const describe = (excerpt: string, html: string) =>
 
 /** A page-level openGraph replaces the layout's, so shared fields are repeated here. */
 export const og = (o: { title: string; description: string; path: string; images?: string[] }) => ({
-  siteName, locale: "ml_IN", type: "website" as const, url: abs(o.path), title: o.title, description: o.description, images: o.images,
+  siteName, locale: "ml_IN", type: "website" as const, url: abs(o.path), title: o.title, description: o.description,
+  images: o.images?.length ? o.images : [abs("/logo.png")], // pages without their own picture still share with the logo
 });
 
 export const organization = {

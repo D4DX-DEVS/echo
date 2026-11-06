@@ -12,7 +12,8 @@ export const metadata: Metadata = {
   metadataBase: new URL(site),
   title: { default: "The Echo — Malayalam News, Kerala Latest Updates", template: "%s | The Echo" },
   description: "Echoing the unheard voices. Malayalam news from Kerala, India and the world.",
-  openGraph: { siteName: "The Echo", type: "website", locale: "ml_IN" },
+  openGraph: { siteName: "The Echo", type: "website", locale: "ml_IN", images: ["/logo.png"] },
+  twitter: { card: "summary" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
