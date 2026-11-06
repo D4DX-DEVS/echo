@@ -7,10 +7,10 @@ export default function Login() {
   const [err, action, pending] = useActionState(login, undefined);
   const [show, setShow] = useState(false);
   return (
-    <div className="min-h-screen bg-page md:grid md:grid-cols-[1fr_1fr] lg:grid-cols-[1.1fr_1fr]">
-      <aside className="relative hidden md:flex flex-col justify-between overflow-hidden bg-nav text-white p-10 lg:p-14">
-        <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-white/10" />
-        <div className="absolute -left-16 bottom-10 h-56 w-56 rounded-full bg-white/5" />
+    <div className="admin-shell min-h-screen bg-page md:grid md:grid-cols-[1fr_1fr] lg:grid-cols-[1.1fr_1fr]">
+      <aside className="login-aside relative hidden md:flex flex-col justify-between overflow-hidden bg-nav text-white p-10 lg:p-14">
+        <div className="login-orb-a absolute -right-24 -top-24 h-72 w-72 rounded-full bg-white/10" />
+        <div className="login-orb-b absolute -left-16 bottom-10 h-56 w-56 rounded-full bg-white/5" />
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/logo.png" alt="The Echo" className="relative h-16 w-auto self-start brightness-0 invert" />
         <div className="relative">
@@ -22,7 +22,7 @@ export default function Login() {
 
       <main className="relative grid place-items-center p-5 min-h-screen md:min-h-0">
         <ThemeToggle className="absolute top-4 right-4 w-10 h-10 grid place-items-center rounded-full border border-line text-fg hover:bg-surface cursor-pointer" />
-        <form action={action} className="w-full max-w-sm">
+        <form action={action} className="login-form w-full max-w-sm">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/logo.png" alt="The Echo" className="md:hidden h-16 w-auto mx-auto mb-6" />
           <h1 className="text-2xl font-bold">Welcome back</h1>

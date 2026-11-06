@@ -1,0 +1,91 @@
+/*
+ * Reader-site polish: the same depth and motion as the admin, tuned for readers. Nothing hides content on load (the first screen
+ * paints at once, so speed and search ranking are untouched); reveals only apply to cards still below the fold, and all motion
+ * is off for people who ask for reduced motion. Colours come from the theme tokens, so light and dark both work.
+ */
+.site-shell { position: relative; isolation: isolate; display: flex; flex: 1 1 auto; flex-direction: column; }
+
+/* soft glow behind the page; drifts slowly on large screens with a mouse, still on phones to save battery */
+.site-shell::before {
+  content: ""; position: fixed; inset: -4%; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(52rem 34rem at 90% -6%, color-mix(in srgb, var(--nav) 20%, transparent), transparent 62%),
+    radial-gradient(40rem 30rem at -8% 105%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 62%);
+}
+@media (hover: hover) and (min-width: 1024px) { .site-shell::before { animation: aurora 24s ease-in-out infinite alternate; } }
+@keyframes aurora { to { transform: translate3d(-2.5%, 2%, 0) scale(1.07); } }
+
+/* ---------- header and menu bar ---------- */
+.site-logo { transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
+a:hover > .site-logo { transform: scale(1.04) rotate(-1deg); }
+.site-nav > .wrap > div {
+  background-image: linear-gradient(135deg, color-mix(in srgb, var(--nav) 88%, white), var(--nav) 55%, color-mix(in srgb, var(--nav) 88%, black));
+  border: 1px solid rgb(255 255 255 / 0.12);
+  box-shadow: 0 16px 32px -16px color-mix(in srgb, var(--nav) 85%, black), inset 0 1px 0 rgb(255 255 255 / 0.18);
+}
+.site-nav a { position: relative; transition: background-color 0.3s, transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.site-nav a::after { content: ""; position: absolute; left: 22%; right: 22%; bottom: 7px; height: 2px; border-radius: 2px; background: #fff; transform: scaleX(0); transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.site-nav a:hover::after, .site-nav a:focus-visible::after { transform: scaleX(1); }
+.site-nav li.group > ul { animation: pop 0.28s cubic-bezier(0.2, 0.8, 0.2, 1); transform-origin: top left; }
+@keyframes pop { from { opacity: 0; transform: translateY(-8px) scale(0.97); } }
+.site-nav form { transition: background-color 0.3s, box-shadow 0.3s; }
+.site-nav form:focus-within { background: rgb(255 255 255 / 0.24); box-shadow: 0 0 0 3px rgb(255 255 255 / 0.25); }
+
+/* ---------- cards ---------- */
+.site-shell a.card .absolute.inset-0 img { transition: transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.section-title::before { background: linear-gradient(var(--accent), var(--nav)); }
+@media (hover: hover) {
+  .site-shell a.card.rounded-xl, .site-shell a.card.rounded-2xl { transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.45s, border-color 0.45s; }
+  .site-shell a.card.rounded-xl:hover, .site-shell a.card.rounded-2xl:hover { transform: translateY(-4px); box-shadow: 0 26px 48px -24px color-mix(in srgb, var(--nav) 65%, black); }
+  .site-shell a.card:hover .absolute.inset-0 img { transform: scale(1.06); }
+}
+
+/* ---------- buttons and fields: same look as the admin ---------- */
+.site-shell .btn { position: relative; overflow: hidden; }
+.site-shell .btn:not(.ghost):not(.danger) {
+  background: linear-gradient(135deg, var(--nav), color-mix(in srgb, var(--nav) 62%, var(--brand-text)));
+  color: #fff; border-color: transparent; box-shadow: 0 10px 22px -12px var(--nav);
+}
+.site-shell .btn:not(.ghost):not(.danger):hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--nav), color-mix(in srgb, var(--nav) 62%, var(--brand-text))); color: #fff;
+  transform: translateY(-1px); box-shadow: 0 16px 28px -12px var(--nav);
+}
+.site-shell .btn:not(.ghost):not(.danger)::after {
+  content: ""; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.38) 50%, transparent 70%);
+  transform: translateX(-130%); transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); pointer-events: none;
+}
+.site-shell .btn:not(.ghost):not(.danger):hover::after { transform: translateX(130%); }
+.site-shell .field { transition: box-shadow 0.3s, border-color 0.3s; }
+.site-shell .field:hover { border-color: color-mix(in srgb, var(--brand-text) 45%, var(--line)); }
+.site-shell .field:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 16%, transparent); }
+
+/* footer and share links nudge on hover */
+@media (hover: hover) {
+  .site-shell footer a:not([aria-label]) { display: inline-block; transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), color 0.3s; }
+  .site-shell footer a:not([aria-label]):hover { transform: translateX(3px); }
+}
+
+/* ---------- reading progress on article pages: a thin bar that fills as you scroll ---------- */
+.read-progress { display: none; }
+@supports (animation-timeline: scroll()) {
+  .read-progress {
+    display: block; position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 60; transform-origin: left; pointer-events: none;
+    background: linear-gradient(90deg, var(--accent), var(--nav)); animation: progress linear both; animation-timeline: scroll(root);
+  }
+}
+@keyframes progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* ---------- reveal on scroll (only the part still below the fold: nothing above it is ever hidden) ---------- */
+@supports (animation-timeline: view()) {
+  .site-shell main a.card, .site-shell main .section-title {
+    animation: reveal linear backwards; animation-timeline: view(); animation-range: entry 0% entry 45%;
+  }
+}
+@keyframes reveal { from { opacity: 0; transform: translateY(28px) scale(0.98); } }
+
+@media print { .site-shell main a.card, .site-shell main .section-title { animation: none !important; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .site-shell *, .site-shell *::before, .site-shell *::after, .read-progress { animation: none !important; transition-duration: 0.01ms !important; }
+  .site-shell::before { animation: none !important; }
+}

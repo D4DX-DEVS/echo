@@ -20,7 +20,7 @@ export default async function Footer() {
           {links.length > 0 && (
             <div className="mt-4 flex flex-wrap gap-2">
               {links.map((s) => (
-                <a key={s.name} href={s.href} target={s.href.startsWith("http") ? "_blank" : undefined} rel="noopener" aria-label={s.name} title={s.name} className="w-[44px] h-[44px] grid place-items-center rounded-full border border-white/40 hover:bg-white/15"><BrandIcon name={s.icon} /></a>
+                <a key={s.name} href={s.href} target={s.href.startsWith("http") ? "_blank" : undefined} rel="noopener" aria-label={s.name} title={s.name} className="w-[44px] h-[44px] grid place-items-center hover:scale-110 hover:opacity-80 transition"><BrandIcon name={s.icon} /></a>
               ))}
             </div>
           )}

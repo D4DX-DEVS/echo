@@ -3,14 +3,15 @@ import { logout } from "../actions";
 import AdminNav from "@/components/AdminNav";
 import Toast from "@/components/Toast";
 import ThemeToggle from "@/components/ThemeToggle";
+import "../admin.css";
 
 export const metadata = { title: "Admin", robots: { index: false } };
 export const dynamic = "force-dynamic";
 
 export default function Panel({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-page md:flex">
-      <aside className="md:w-60 shrink-0 bg-bg border-b md:border-b-0 md:border-r border-line p-3 md:p-4 flex flex-wrap md:flex-col gap-1 items-center md:items-stretch md:sticky md:top-0 md:h-screen">
+    <div className="admin-shell min-h-screen bg-page md:flex">
+      <aside className="admin-side md:w-60 shrink-0 bg-bg border-b md:border-b-0 md:border-r border-line p-3 md:p-4 flex flex-wrap md:flex-col gap-1 items-center md:items-stretch md:sticky md:top-0 md:h-screen">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/logo.png" alt="The Echo" className="h-9 md:h-12 w-auto self-start mb-0 md:mb-5 mr-auto md:mr-0" />
         <nav aria-label="Admin" className="max-md:order-last max-md:w-full flex md:flex-col gap-1 max-md:overflow-x-auto"><AdminNav /></nav>
@@ -24,7 +25,7 @@ export default function Panel({ children }: { children: React.ReactNode }) {
           </button>
         </form>
       </aside>
-      <div className="flex-1 p-4 md:p-8 min-w-0">{children}</div>
+      <div className="admin-main flex-1 p-4 md:p-8 min-w-0">{children}</div>
       <Suspense><Toast /></Suspense>
     </div>
   );

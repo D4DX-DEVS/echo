@@ -17,8 +17,8 @@ export default function AreaChart({ data, format, label }: { data: { label: stri
           <text x={L - 8} y={y(step * k) + 4} textAnchor="end" fontSize="11" fill="var(--muted)">{format(step * k)}</text>
         </g>
       ))}
-      {data.length > 0 && <path d={`${line} L${x(data.length - 1).toFixed(1)} ${y(0)} L${x(0).toFixed(1)} ${y(0)} Z`} fill="var(--brand-text)" opacity="0.14" />}
-      <path d={line} fill="none" stroke="var(--brand-text)" strokeWidth="2" strokeLinejoin="round" />
+      {data.length > 0 && <path d={`${line} L${x(data.length - 1).toFixed(1)} ${y(0)} L${x(0).toFixed(1)} ${y(0)} Z`} className="chart-area" fill="var(--brand-text)" opacity="0.14" />}
+      <path d={line} className="chart-line" pathLength={1} fill="none" stroke="var(--brand-text)" strokeWidth="2" strokeLinejoin="round" />
       {ticks.map((i) => <text key={i} x={x(i)} y={H - 6} textAnchor="middle" fontSize="11" fill="var(--muted)">{data[i]?.label}</text>)}
       {data.map((d, i) => (
         <circle key={i} cx={x(i)} cy={y(d.value)} r={data.length > 40 ? 5 : 7} fill="transparent" stroke="none"><title>{`${d.label}: ${format(d.value)}`}</title></circle>

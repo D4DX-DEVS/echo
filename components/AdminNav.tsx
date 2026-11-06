@@ -24,13 +24,13 @@ export default function AdminNav() {
           key={i.href}
           href={i.href}
           aria-current={active(i.href) ? "page" : undefined}
-          className={`flex shrink-0 items-center gap-2.5 whitespace-nowrap px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${active(i.href) ? "border border-brand-text text-brand-text" : "border border-transparent text-muted hover:text-brand-text hover:border-line"}`}
+          className={`nav-link flex shrink-0 items-center gap-2.5 whitespace-nowrap px-3 py-2 rounded-lg text-sm font-semibold ${active(i.href) ? "border border-brand-text text-brand-text" : "border border-transparent text-muted hover:text-brand-text hover:border-line"}`}
         >
           {icon(i.d)}
           {i.label}
         </Link>
       ))}
-      <Link href="/" target="_blank" className="flex shrink-0 items-center gap-2.5 whitespace-nowrap px-3 py-2 rounded-lg text-sm font-semibold border border-transparent text-muted hover:text-brand-text hover:border-line transition-colors">
+      <Link href="/" target="_blank" className="nav-link flex shrink-0 items-center gap-2.5 whitespace-nowrap px-3 py-2 rounded-lg text-sm font-semibold border border-transparent text-muted hover:text-brand-text hover:border-line transition-colors">
         {icon("M14 4h6v6M20 4l-9 9M18 14v5H5V6h5")}
         View site
       </Link>

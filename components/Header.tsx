@@ -24,9 +24,9 @@ export default async function Header() {
         </Link>
         <div className="absolute right-4 top-3 sm:top-4 flex items-center gap-2">
           {social.filter((s) => s.href).map((s) => (
-            <a key={s.name} href={s.href} target={s.href.startsWith("http") ? "_blank" : undefined} rel="noopener" aria-label={s.name} title={s.name} className="hidden xl:grid w-[44px] h-[44px] place-items-center rounded-full border border-line hover:text-accent hover:bg-surface"><BrandIcon name={s.icon} /></a>
+            <a key={s.name} href={s.href} target={s.href.startsWith("http") ? "_blank" : undefined} rel="noopener" aria-label={s.name} title={s.name} className="hidden xl:grid w-[44px] h-[44px] place-items-center hover:text-accent hover:scale-110 transition"><BrandIcon name={s.icon} /></a>
           ))}
-          <ThemeToggle className="w-[44px] h-[44px] grid place-items-center rounded-full border border-line hover:bg-surface" />
+          <ThemeToggle className="w-[44px] h-[44px] grid place-items-center hover:text-accent hover:scale-110 transition" />
         </div>
       </header>
 

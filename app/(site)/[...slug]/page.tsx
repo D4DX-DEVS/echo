@@ -174,6 +174,7 @@ export default async function Slug({ params }: { params: Promise<{ slug: string[
       }} />
       <JsonLd data={breadcrumbs(trail)} />
       <Track kind="article" post={post.id} cat={post.category_id} />
+      <div className="read-progress" aria-hidden="true" />
       <nav aria-label="Breadcrumb" className="text-[0.8rem] text-muted flex flex-wrap items-center gap-1.5 mb-5">
         <Link prefetch={false} href="/" className="inline-block px-2 -mx-2 py-4 -my-4 hover:text-accent">Home</Link>
         {parent && <><span>›</span><Link prefetch={false} href={categoryPath(cats, parent)} className="inline-block px-2 -mx-2 py-4 -my-4 hover:text-accent">{parent.name}</Link></>}

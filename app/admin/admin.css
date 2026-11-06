@@ -1,0 +1,131 @@
+/*
+ * Admin polish: depth and motion on top of the site theme (colours all come from the tokens in globals.css, so light and dark
+ * both work). Nothing here changes layout; every animation is switched off for people who ask for reduced motion.
+ */
+.admin-shell { position: relative; isolation: isolate; }
+
+/* soft aurora behind everything: teal glow top right, a touch of the logo red bottom left, drifting slowly */
+.admin-shell::before {
+  content: ""; position: fixed; inset: -4%; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(52rem 34rem at 88% -8%, color-mix(in srgb, var(--nav) 24%, transparent), transparent 62%),
+    radial-gradient(40rem 30rem at -6% 108%, color-mix(in srgb, var(--accent) 13%, transparent), transparent 62%),
+    radial-gradient(28rem 22rem at 50% 45%, color-mix(in srgb, var(--brand-text) 7%, transparent), transparent 70%);
+  animation: aurora 22s ease-in-out infinite alternate;
+}
+@keyframes aurora { to { transform: translate3d(-2.5%, 2%, 0) scale(1.07); } }
+
+/* ---------- sidebar ---------- */
+.admin-side { background: color-mix(in srgb, var(--bg) 78%, transparent); backdrop-filter: blur(18px) saturate(1.4); -webkit-backdrop-filter: blur(18px) saturate(1.4); }
+.admin-side img { transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.admin-side img:hover { transform: scale(1.05) rotate(-1.5deg); }
+.admin-side nav > * { animation: slide-in 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; animation-delay: calc(var(--n, 6) * 55ms + 120ms); }
+.admin-side nav > :nth-child(1) { --n: 0; } .admin-side nav > :nth-child(2) { --n: 1; } .admin-side nav > :nth-child(3) { --n: 2; }
+.admin-side nav > :nth-child(4) { --n: 3; } .admin-side nav > :nth-child(5) { --n: 4; } .admin-side nav > :nth-child(6) { --n: 5; }
+@keyframes slide-in { from { opacity: 0; transform: translateX(-14px); } }
+
+.nav-link { position: relative; overflow: hidden; transition: color 0.25s, background-color 0.3s, border-color 0.3s, box-shadow 0.35s, transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) !important; }
+.nav-link svg { transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.nav-link:hover { transform: translateX(3px); background: color-mix(in srgb, var(--brand-text) 7%, transparent); }
+.nav-link:hover svg { transform: scale(1.18) rotate(-4deg); }
+.nav-link[aria-current="page"] {
+  background: linear-gradient(100deg, color-mix(in srgb, var(--brand-text) 16%, transparent), color-mix(in srgb, var(--brand-text) 4%, transparent));
+  box-shadow: 0 8px 22px -12px color-mix(in srgb, var(--brand-text) 70%, transparent);
+}
+.nav-link[aria-current="page"]::before {
+  content: ""; position: absolute; left: 0; top: 24%; bottom: 24%; width: 3px; border-radius: 0 3px 3px 0;
+  background: linear-gradient(var(--accent), var(--nav)); animation: bar-in 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+}
+@keyframes bar-in { from { transform: scaleY(0); } }
+
+/* ---------- page entrance: the page, then its blocks one after another ---------- */
+.admin-main > * { animation: rise 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; }
+.admin-main > * > * { --i: 9; animation: rise 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; animation-delay: calc(var(--i) * 60ms); }
+.admin-main > * > :nth-child(1) { --i: 0; } .admin-main > * > :nth-child(2) { --i: 1; } .admin-main > * > :nth-child(3) { --i: 2; }
+.admin-main > * > :nth-child(4) { --i: 3; } .admin-main > * > :nth-child(5) { --i: 4; } .admin-main > * > :nth-child(6) { --i: 5; }
+.admin-main > * > :nth-child(7) { --i: 6; } .admin-main > * > :nth-child(8) { --i: 7; } .admin-main > * > :nth-child(9) { --i: 8; }
+@keyframes rise { from { opacity: 0; transform: translateY(18px) scale(0.985); } }
+
+.admin-main h1 { letter-spacing: -0.015em; }
+.admin-main h1::after { content: ""; display: block; width: 2.6rem; height: 3px; margin-top: 0.5rem; border-radius: 3px; background: linear-gradient(90deg, var(--accent), var(--nav)); animation: line-in 0.9s 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; }
+@keyframes line-in { from { width: 0; } }
+
+/* ---------- cards ---------- */
+.admin-main .rounded-2xl.bg-bg {
+  background: color-mix(in srgb, var(--bg) 90%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--fg) 6%, transparent), 0 12px 32px -22px color-mix(in srgb, var(--nav) 40%, transparent);
+}
+/* the analytics cards and tiles lift on hover (big tables and forms stay put) */
+.admin-main section.rounded-2xl.bg-bg, .admin-main .rounded-xl.bg-surface { transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s, border-color 0.4s, background-color 0.4s; }
+.admin-main section.rounded-2xl.bg-bg:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--brand-text) 38%, var(--line)); box-shadow: 0 22px 46px -24px color-mix(in srgb, var(--nav) 60%, transparent); }
+.admin-main .rounded-xl.bg-surface:hover { transform: translateY(-2px) scale(1.015); background: color-mix(in srgb, var(--brand-text) 10%, var(--surface)); box-shadow: 0 14px 28px -18px color-mix(in srgb, var(--nav) 70%, transparent); }
+.admin-main .rounded-xl.bg-surface .text-2xl { background: linear-gradient(120deg, var(--fg) 30%, var(--brand-text)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+/* ---------- buttons: primary ones are solid with a light sweep; the rest keep the outline look ---------- */
+.admin-shell .btn { position: relative; overflow: hidden; }
+.admin-shell .btn:not(.ghost):not(.danger) {
+  background: linear-gradient(135deg, var(--nav), color-mix(in srgb, var(--nav) 62%, var(--brand-text)));
+  color: #fff; border-color: transparent; box-shadow: 0 10px 22px -12px var(--nav);
+}
+.admin-shell .btn:not(.ghost):not(.danger):hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--nav), color-mix(in srgb, var(--nav) 62%, var(--brand-text))); color: #fff;
+  transform: translateY(-1px); box-shadow: 0 16px 28px -12px var(--nav);
+}
+.admin-shell .btn:not(.ghost):not(.danger)::after {
+  content: ""; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.38) 50%, transparent 70%);
+  transform: translateX(-130%); transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); pointer-events: none;
+}
+.admin-shell .btn:not(.ghost):not(.danger):hover::after { transform: translateX(130%); }
+.admin-shell .btn.ghost:hover:not(:disabled), .admin-shell .btn.danger:hover:not(:disabled) { transform: translateY(-1px); }
+
+/* ---------- fields ---------- */
+.admin-shell .field { transition: box-shadow 0.3s, border-color 0.3s, background-color 0.3s; }
+.admin-shell .field:hover { border-color: color-mix(in srgb, var(--brand-text) 45%, var(--line)); }
+.admin-shell .field:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 16%, transparent); }
+
+/* ---------- tables and lists ---------- */
+.admin-main tbody tr { transition: background-color 0.25s; animation: rise-sm 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; animation-delay: calc(var(--r, 12) * 28ms + 150ms); }
+.admin-main tbody tr:hover { background: color-mix(in srgb, var(--brand-text) 7%, transparent); }
+.admin-main tbody tr:nth-child(1) { --r: 0; } .admin-main tbody tr:nth-child(2) { --r: 1; } .admin-main tbody tr:nth-child(3) { --r: 2; } .admin-main tbody tr:nth-child(4) { --r: 3; }
+.admin-main tbody tr:nth-child(5) { --r: 4; } .admin-main tbody tr:nth-child(6) { --r: 5; } .admin-main tbody tr:nth-child(7) { --r: 6; } .admin-main tbody tr:nth-child(8) { --r: 7; }
+.admin-main tbody tr:nth-child(9) { --r: 8; } .admin-main tbody tr:nth-child(10) { --r: 9; } .admin-main tbody tr:nth-child(11) { --r: 10; } .admin-main tbody tr:nth-child(12) { --r: 11; }
+@keyframes rise-sm { from { opacity: 0; transform: translateY(8px); } }
+.admin-main ul > li { transition: background-color 0.25s; }
+
+/* published dot breathes, the live dot pings */
+.admin-main .bg-green-600.rounded-full { animation: breathe 2.4s ease-in-out infinite; }
+@keyframes breathe { 0%, 100% { box-shadow: 0 0 0 0 rgb(22 163 74 / 0.45); } 50% { box-shadow: 0 0 0 5px rgb(22 163 74 / 0); } }
+.admin-main .w-1\.5.bg-green-500 { animation: ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite; }
+@keyframes ping { 0% { box-shadow: 0 0 0 0 rgb(34 197 94 / 0.6); } 80%, 100% { box-shadow: 0 0 0 7px rgb(34 197 94 / 0); } }
+
+/* ---------- analytics: bars grow, chart lines draw themselves ---------- */
+.admin-main .h-full.rounded.bg-brand-text, .admin-main .h-full.bg-green-500, .admin-main .bg-green-500.h-full { transform-origin: left; animation: grow 1s cubic-bezier(0.2, 0.8, 0.2, 1) backwards 0.3s; }
+.admin-main .rounded-sm.bg-brand-text\/80 { transform-origin: bottom; animation: grow-up 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; }
+@keyframes grow { from { transform: scaleX(0); } }
+@keyframes grow-up { from { transform: scaleY(0); } }
+.chart-line { stroke-dasharray: 1; animation: draw 1.6s cubic-bezier(0.4, 0, 0.2, 1) 0.3s backwards; }
+.chart-area { animation: fade-in 1.2s ease 0.7s backwards; }
+@keyframes draw { from { stroke-dashoffset: 1; } }
+@keyframes fade-in { from { opacity: 0; } }
+
+/* ---------- loading skeleton ---------- */
+.skeleton { position: relative; overflow: hidden; border-radius: 1rem; background: color-mix(in srgb, var(--brand-text) 9%, var(--surface)); }
+.skeleton::after { content: ""; position: absolute; inset: 0; transform: translateX(-100%); background: linear-gradient(100deg, transparent 20%, color-mix(in srgb, var(--bg) 70%, transparent) 50%, transparent 80%); animation: shimmer 1.5s infinite; }
+@keyframes shimmer { to { transform: translateX(100%); } }
+
+/* ---------- sign-in ---------- */
+.login-aside::before {
+  content: ""; position: absolute; inset: -20%; pointer-events: none;
+  background: radial-gradient(34rem 26rem at 20% 20%, rgb(255 255 255 / 0.16), transparent 60%), radial-gradient(30rem 24rem at 85% 85%, color-mix(in srgb, var(--accent) 38%, transparent), transparent 62%);
+  animation: aurora 14s ease-in-out infinite alternate;
+}
+.login-orb-a { animation: float 9s ease-in-out infinite alternate; }
+.login-orb-b { animation: float 12s ease-in-out infinite alternate-reverse; }
+@keyframes float { to { transform: translate3d(18px, -22px, 0) scale(1.08); } }
+.login-form > * { animation: rise 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; animation-delay: calc(var(--i, 0) * 80ms + 100ms); }
+.login-form > :nth-child(2) { --i: 1; } .login-form > :nth-child(3) { --i: 2; } .login-form > :nth-child(4) { --i: 3; }
+.login-form > :nth-child(5) { --i: 4; } .login-form > :nth-child(6) { --i: 5; } .login-form > :nth-child(7) { --i: 6; }
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-shell *, .admin-shell *::before, .admin-shell *::after, .login-aside::before { animation: none !important; transition-duration: 0.01ms !important; }
+}
