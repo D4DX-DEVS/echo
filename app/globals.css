@@ -54,6 +54,8 @@
 }
 
 /* 16px at 1280, 17px at 1920; written in rem so a larger default text size set in the browser or phone still scales everything */
+/* thin scrollbar with a see-through track on every page, admin included; the thumb takes the theme's muted colour */
+* { scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--muted) 40%, transparent) transparent; }
 html { scroll-behavior: smooth; font-size: clamp(0.9375rem, 0.875rem + 0.156vw, 1.09375rem); }
 /* Show moon in light mode, sun in dark mode (pure CSS, so no hydration flicker). */
 .light-hide { display: none; }
